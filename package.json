@@ -1,0 +1,21 @@
+{
+  "name": "ht4w5-blog",
+  "version": "1.0.0",
+  "description": "A personal blog hosted on GitHub Pages",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "keywords": ["blog", "astro"],
+  "author": "ht4w5",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "7.3.3",
+    "fuse.js": "^7.5.0"
+  }
+}
