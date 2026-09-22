@@ -47,16 +47,9 @@ function formatDate(dateString: string): string {
   </article>
 
   <nav class="post-nav">
-    {prevPost && (
-      <a href={`/blog/${prevPost.id}`}>
-        ← {prevPost.data.title}
-      </a>
-    )}
-    {nextPost && (
-      <a href={`/blog/${nextPost.id}`}>
-        → {nextPost.data.title}
-      </a>
-    )}
-    <a href="/">← Back to list</a>
+    {prevPost && <a href={`/blog/${prevPost.id}`}>[prev: {prevPost.data.title}]</a>}
+    <a href="/">[home]</a>
+    <a href="#">[top]</a>
+    {nextPost && <a href={`/blog/${nextPost.id}`}>[next: {nextPost.data.title}]</a>}
   </nav>
 </BaseLayout>

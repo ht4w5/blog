@@ -9,7 +9,7 @@ export async function GET() {
 
   return rss({
     title: 'ht4w5',
-    description: 'A personal blog',
+    description: 'ht4w5\'s blog',
     site: 'https://ht4w5.github.io',
     xmlns: { dc: 'http://purl.org/dc/elements/1.1/' },
     customData: '<language>en</language>',
