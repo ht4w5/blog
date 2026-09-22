@@ -1,5 +1,5 @@
 {
-  "name": "ht4w5-blog",
+  "name": "blog",
   "version": "1.0.0",
   "description": "A personal blog hosted on GitHub Pages",
   "type": "module",
@@ -8,9 +8,12 @@
     "build": "astro build",
     "preview": "astro preview"
   },
-  "keywords": ["blog", "astro"],
+  "keywords": [
+    "blog",
+    "astro"
+  ],
   "author": "ht4w5",
-  "license": "ISC",
+  "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

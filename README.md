@@ -26,8 +26,9 @@ Create a new markdown file in `src/content/blog/` with the following frontmatter
 ---
 title: "Your Post Title"
 description: "Optional description for excerpts and search"
-date: "2025-01-15T10:30:00+08:00"
+date: "2025-01-15"
 tags: ["tag1", "tag2"]
+lang: "en"
 draft: false
 ---
 
@@ -40,8 +41,9 @@ Your post content here...
 |-------|----------|-------------|
 | `title` | Yes | The post title |
 | `description` | No | Custom excerpt (auto-generated from first 160 chars if omitted) |
-| `date` | Yes | Publication date in RFC 3339 format (e.g., `2025-01-15T10:30:00+08:00`) |
+| `date` | Yes | Publication date in `YYYY-MM-DD` format (e.g., `2025-01-15`) |
 | `tags` | No | Array of tag strings (default: `[]`) |
+| `lang` | No | Post language: `en` or `zh-CN` (default: `en`) |
 | `draft` | No | Set to `true` to hide from public site (default: `false`) |
 
 ### Drafts
@@ -82,7 +84,8 @@ export default defineConfig({
 
 ### About Page
 
-Edit `src/pages/about.astro` to customize your about page content.
+Edit `src/data/about.md` to customize your about page content. It is rendered by
+`src/pages/about.astro`, which reads the page metadata from the Markdown frontmatter.
 
 ## Features
 
@@ -90,9 +93,10 @@ Edit `src/pages/about.astro` to customize your about page content.
 - **Syntax highlighting** for code blocks
 - **Tags** with filtered tag pages
 - **Inline search** powered by Fuse.js
-- **Atom feed** at `/feed.xml` with auto-discovery
+- **RSS feed** at `/feed.xml` with auto-discovery
 - **Pagination** at 20 posts per page
 - **Draft support** for work-in-progress posts
+- **Bilingual posts** (English and Simplified Chinese) via per-post `lang`
 - **Custom 404 page**
 - **Minimal design** inspired by lkml.org
 
@@ -105,4 +109,5 @@ Edit `src/pages/about.astro` to customize your about page content.
 
 ## License
 
-MIT
+- **Code** (templates, styles, scripts): [MIT](https://opensource.org/licenses/MIT)
+- **Blog content** (posts, about page): [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

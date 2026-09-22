@@ -4,23 +4,25 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  lang?: 'en' | 'zh-CN';
 }
 
-const { title, description } = Astro.props;
+const { title, description, lang = 'en' } = Astro.props;
 const siteTitle = 'ht4w5';
+const author = 'ht4w5';
 const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang={lang}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content={description || 'A personal blog'} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content={description || 'ht4w5\'s blog'} />
+  <meta name="author" content={author} />
   <link
     rel="alternate"
-    type="application/atom+xml"
+    type="application/rss+xml"
     title={siteTitle}
     href="/feed.xml"
   />
@@ -56,28 +58,40 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
   <footer class="site-footer">
     <div class="container">
       <p><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png"></a><br>
-    This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</p>
+    The content of this blog is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>. The site code is <a href="https://opensource.org/licenses/MIT">MIT</a> licensed.</p>
     </div>
   </footer>
 
   <script>
-    let searchIndex: any[] | null = null;
-    let fuse: any = null;
+    import type Fuse from 'fuse.js';
+    import type { FuseResult } from 'fuse.js';
 
-    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
+    interface SearchItem {
+      slug: string;
+      title: string;
+      tags: string[];
+      excerpt: string;
+      date: string;
+    }
+
+    let searchIndex: SearchItem[] | null = null;
+    let fuse: Fuse<SearchItem> | null = null;
+
+    const searchInput = document.querySelector<HTMLInputElement>('.search-input');
     const searchResults = document.getElementById('search-results');
 
-    async function loadSearchIndex() {
+    async function loadSearchIndex(): Promise<void> {
       if (searchIndex) return;
 
       try {
         const response = await fetch('/search-index.json');
-        searchIndex = await response.json();
+        const data: unknown = await response.json();
+        if (!Array.isArray(data)) return;
+        searchIndex = data as SearchItem[];
 
         // Dynamically import Fuse.js
-        const Fuse = (await import('fuse.js')).default;
-        if (!searchIndex) return;
-        fuse = new Fuse(searchIndex, {
+        const FuseCtor = (await import('fuse.js')).default;
+        fuse = new FuseCtor(searchIndex, {
           keys: ['title', 'tags', 'excerpt'],
           threshold: 0.3,
           includeScore: true,
@@ -87,49 +101,64 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
       }
     }
 
-    function showResults(results: any[]) {
+    function showResults(results: FuseResult<SearchItem>[]): void {
       if (!searchResults) return;
+      searchResults.replaceChildren();
 
       if (results.length === 0) {
-        searchResults.innerHTML = '<div class="search-no-results">No results found.</div>';
-        searchResults.classList.add('active');
-        return;
+        const empty = document.createElement('div');
+        empty.className = 'search-no-results';
+        empty.textContent = 'No results found.';
+        searchResults.append(empty);
+      } else {
+        for (const { item } of results.slice(0, 10)) {
+          const link = document.createElement('a');
+          link.className = 'search-result-item';
+          link.href = `/blog/${item.slug}`;
+
+          const title = document.createElement('span');
+          title.className = 'result-title';
+          title.textContent = item.title;
+
+          const date = document.createElement('span');
+          date.className = 'result-date';
+          date.textContent = item.date;
+
+          link.append(title, date);
+          searchResults.append(link);
+        }
       }
 
-      searchResults.innerHTML = results
-        .slice(0, 10)
-        .map(
-          (r: any) => `
-            <a href="/blog/${r.item.slug}" class="search-result-item">
-              <span class="result-title">${r.item.title}</span>
-              <span class="result-date">${r.item.date}</span>
-            </a>
-          `
-        )
-        .join('');
       searchResults.classList.add('active');
     }
 
-    searchInput?.addEventListener('focus', () => {
-      loadSearchIndex();
-    });
-
-    searchInput?.addEventListener('input', (e) => {
-      const target = e.target as HTMLInputElement;
-      const query = target.value.trim();
+    function updateResults(): void {
+      const query = searchInput?.value.trim() ?? '';
 
       if (!query || !fuse) {
         searchResults?.classList.remove('active');
         return;
       }
 
-      const results = fuse.search(query);
-      showResults(results);
+      showResults(fuse.search(query));
+    }
+
+    searchInput?.addEventListener('focus', () => {
+      void loadSearchIndex().then(updateResults);
+    });
+
+    searchInput?.addEventListener('input', () => {
+      if (!fuse) {
+        void loadSearchIndex().then(updateResults);
+        return;
+      }
+      updateResults();
     });
 
     // Close search results when clicking outside
     document.addEventListener('click', (e) => {
-      if (!searchInput?.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (!searchInput?.contains(target) && !searchResults?.contains(target)) {
         searchResults?.classList.remove('active');
       }
     });

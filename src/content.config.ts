@@ -10,6 +10,7 @@ const blog = defineCollection({
       message: 'Date must be YYYY-MM-DD (e.g. 2025-01-15)',
     }),
     tags: z.array(z.string()).default([]),
+    lang: z.enum(['en', 'zh-CN']).default('en'),
     draft: z.boolean().default(false),
   }),
 });

@@ -3,6 +3,7 @@ title: "Hello World"
 description: "Welcome to my new blog built with Astro."
 date: "2025-01-15"
 tags: ["blog", "astro"]
+lang: "en"
 draft: false
 ---
 
@@ -26,7 +27,7 @@ interface Post {
 const posts: Post[] = [
   {
     title: "Hello World",
-    date: "2025-01-15T10:30:00+08:00",
+    date: "2025-01-15",
     tags: ["blog", "astro"],
   },
 ];

@@ -11,12 +11,16 @@ export async function GET() {
     title: 'ht4w5',
     description: 'A personal blog',
     site: 'https://ht4w5.github.io',
+    xmlns: { dc: 'http://purl.org/dc/elements/1.1/' },
+    customData: '<language>en</language>',
     items: posts.map((post) => ({
       title: post.data.title,
       pubDate: new Date(post.data.date),
       description: generateExcerpt(post.data.description, post.body),
       link: `/blog/${post.id}/`,
+      author: 'ht4w5',
+      categories: post.data.tags,
+      customData: `<dc:language>${post.data.lang}</dc:language>`,
     })),
-    customData: '<language>en-us</language>',
   });
 }
