@@ -6,15 +6,13 @@ lang: "en"
 
 # About
 
-This is a personal blog built with [Astro](https://astro.build) and hosted on [GitHub Pages](https://pages.github.com).
+I'm a CS undergraduate at XJTU.
 
-The design is intentionally minimal — inspired by the plain, functional style of early web archives like lkml.org. No frameworks, no decorations, just content.
+### License
 
-## About the Author
+Unless otherwise stated, all content of this blog is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 
-<!-- Edit this section with your own information -->
-A developer who enjoys writing about technology, programming, and the occasional deep dive into how things work.
+### Contact
 
-## Contact
-
-Find me on [GitHub](https://github.com/ht4w5).
+- Email: ht4w5x at gmail dot com
+- Github: https://github.com/ht4w5
