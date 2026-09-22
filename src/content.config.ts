@@ -6,8 +6,8 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/, {
-      message: 'Date must be in RFC 3339 format (e.g. 2025-01-15T10:30:00+08:00)',
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: 'Date must be YYYY-MM-DD (e.g. 2025-01-15)',
     }),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
