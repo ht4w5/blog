@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { generateExcerpt } from '../utils/excerpt';
+import { tagHue } from '../utils/tag-color';
 
 export async function getStaticPaths() {
   return [{ params: {} }];
@@ -63,7 +64,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
           {post.data.tags.length > 0 && (
             <div class="tag-pills">
               {post.data.tags.map((tag) => (
-                <a href={`/tags/${tag}`} class="tag-pill">{tag}</a>
+                <a href={`/tags/${tag}`} class="tag-pill" style={`--hue: ${tagHue(tag)}`}>{tag}</a>
               ))}
             </div>
           )}
