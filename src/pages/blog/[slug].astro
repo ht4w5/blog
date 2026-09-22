@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 import { getCollection, render } from 'astro:content';
 import { tagHue } from '../../utils/tag-color';
 
@@ -19,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 const { post, prevPost, nextPost } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 function formatDate(dateString: string): string {
   return dateString;
@@ -27,30 +28,34 @@ function formatDate(dateString: string): string {
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} lang={post.data.lang}>
-  <article>
-    <header class="post-header">
-      <h1>{post.data.title}</h1>
-      <time class="post-date" datetime={post.data.date}>
-        {formatDate(post.data.date)}
-      </time>
-      {post.data.tags.length > 0 && (
-        <div class="tag-pills">
-          {post.data.tags.map((tag) => (
-            <a href={`/tags/${tag}`} class="tag-pill" style={`--hue: ${tagHue(tag)}`}>{tag}</a>
-          ))}
-        </div>
-      )}
-    </header>
+  <div class="post-layout">
+    <article>
+      <header class="post-header">
+        <h1>{post.data.title}</h1>
+        <time class="post-date" datetime={post.data.date}>
+          {formatDate(post.data.date)}
+        </time>
+        {post.data.tags.length > 0 && (
+          <div class="tag-pills">
+            {post.data.tags.map((tag) => (
+              <a href={`/tags/${tag}`} class="tag-pill" style={`--hue: ${tagHue(tag)}`}>{tag}</a>
+            ))}
+          </div>
+        )}
+      </header>
 
-    <div class="post-content">
-      <Content />
-    </div>
-  </article>
+      <div class="post-content">
+        <Content />
+      </div>
 
-  <nav class="post-nav">
-    {prevPost && <a href={`/blog/${prevPost.id}`}>[prev: {prevPost.data.title}]</a>}
-    <a href="/">[home]</a>
-    <a href="#">[top]</a>
-    {nextPost && <a href={`/blog/${nextPost.id}`}>[next: {nextPost.data.title}]</a>}
-  </nav>
+      <nav class="post-nav">
+        {prevPost && <a href={`/blog/${prevPost.id}`}>[prev: {prevPost.data.title}]</a>}
+        <a href="/">[home]</a>
+        <a href="#">[top]</a>
+        {nextPost && <a href={`/blog/${nextPost.id}`}>[next: {nextPost.data.title}]</a>}
+      </nav>
+    </article>
+
+    <TableOfContents headings={headings} />
+  </div>
 </BaseLayout>

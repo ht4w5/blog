@@ -113,10 +113,8 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
       {totalPages > 1 && (
         <nav class="pagination" aria-label="Pagination">
-          {currentPage > 1 ? (
-            <a href={currentPage === 2 ? `/tags/${tag}` : `/tags/${tag}/page/${currentPage - 1}`} aria-label="Previous page">←</a>
-          ) : (
-            <span class="disabled" aria-label="Previous page">←</span>
+          {currentPage > 1 && (
+            <a href={currentPage === 2 ? `/tags/${tag}` : `/tags/${tag}/page/${currentPage - 1}`} aria-label="Previous page">prev</a>
           )}
 
           {pageNumbers.map((page) => {
@@ -131,10 +129,8 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
             );
           })}
 
-          {currentPage < totalPages ? (
-            <a href={`/tags/${tag}/page/${currentPage + 1}`} aria-label="Next page">→</a>
-          ) : (
-            <span class="disabled" aria-label="Next page">→</span>
+          {currentPage < totalPages && (
+            <a href={`/tags/${tag}/page/${currentPage + 1}`} aria-label="Next page">next</a>
           )}
         </nav>
       )}
