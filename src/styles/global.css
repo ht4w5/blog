@@ -44,7 +44,6 @@
   font-family: var(--font-mono);
   color: var(--color-muted);
   padding: 0;
-  margin-left: 0.5rem;
   line-height: 1;
 }
 
@@ -213,27 +212,49 @@ hr {
   color: var(--color-link);
 }
 
-/* Search */
+/* Search — bracket style matching nav links */
 .search-wrapper {
   position: relative;
   margin-left: auto;
   align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-bracket {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.search-bracket::before {
+  content: "[";
+}
+
+.search-bracket::after {
+  content: "]";
 }
 
 .search-input {
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 0.875rem;
-  padding: 0.35rem 0.6rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: var(--color-bg);
+  border: none;
+  background: none;
   color: var(--color-text);
-  width: 200px;
+  width: 6ch;
+  padding: 0;
+  outline: none;
+  transition: width 0.15s;
 }
 
 .search-input:focus {
-  outline: none;
-  border-color: var(--color-link);
+  width: 180px;
+  color: var(--color-link);
+}
+
+.search-bracket:focus-within {
+  color: var(--color-link);
 }
 
 .search-results {

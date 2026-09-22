@@ -50,15 +50,17 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
         <li><a href="/feed.xml">[feed]</a></li>
       </ul>
       <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Search…"
-          aria-label="Search posts"
-        />
+        <span class="search-bracket">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="search"
+            aria-label="Search posts"
+          />
+        </span>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">◐</button>
         <div class="search-results" id="search-results"></div>
       </div>
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">◐</button>
     </div>
   </nav>
 
