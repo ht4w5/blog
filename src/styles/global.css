@@ -385,10 +385,20 @@ hr {
 
 .post-nav a {
   white-space: nowrap;
+  display: inline-block;
+  color: var(--color-muted);
 }
 
-.post-nav a {
-  display: inline-block;
+.post-nav a:hover {
+  color: var(--color-link);
+}
+
+.nav-link-style {
+  color: var(--color-muted);
+}
+
+.nav-link-style:hover {
+  color: var(--color-link);
 }
 
 /* About / 404 */
