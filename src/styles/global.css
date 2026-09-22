@@ -305,26 +305,6 @@ hr {
   text-decoration: none;
 }
 
-/* Tags page */
-.tag-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tag-list-item {
-  margin-bottom: 0.75rem;
-}
-
-.tag-list-item a {
-  font-family: var(--font-mono);
-}
-
-.tag-count {
-  color: var(--color-muted);
-  font-size: 0.85rem;
-}
-
 /* Post content */
 .post-header {
   margin-bottom: 2rem;

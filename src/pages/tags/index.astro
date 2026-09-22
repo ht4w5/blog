@@ -22,13 +22,10 @@ const sortedTags = Array.from(tagCounts.entries()).sort((a, b) => a[0].localeCom
   {sortedTags.length === 0 ? (
     <p>No tags yet.</p>
   ) : (
-    <ul class="tag-list">
+    <div class="tag-pills">
       {sortedTags.map(([tag, count]) => (
-        <li class="tag-list-item">
-          <a href={`/tags/${tag}`}>{tag}</a>
-          <span class="tag-count">({count} {count === 1 ? 'post' : 'posts'})</span>
-        </li>
+        <a href={`/tags/${tag}`} class="tag-pill">{tag} ({count})</a>
       ))}
-    </ul>
+    </div>
   )}
 </BaseLayout>
