@@ -13,6 +13,54 @@
   --max-width: 960px;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #1a1a1a;
+    --color-text: #e0e0e0;
+    --color-link: #6eaaff;
+    --color-link-hover: #8ec0ff;
+    --color-code-bg: #2a2a2a;
+    --color-border: #444;
+    --color-muted: #999;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #1a1a1a;
+  --color-text: #e0e0e0;
+  --color-link: #6eaaff;
+  --color-link-hover: #8ec0ff;
+  --color-code-bg: #2a2a2a;
+  --color-border: #444;
+  --color-muted: #999;
+}
+
+/* Theme toggle button — matches nav link style */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  color: var(--color-muted);
+  padding: 0;
+  margin-left: 0.5rem;
+  line-height: 1;
+}
+
+.theme-toggle::before {
+  content: "[";
+}
+
+.theme-toggle::after {
+  content: "]";
+}
+
+.theme-toggle:hover {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
 *,
 *::before,
 *::after {

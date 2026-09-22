@@ -27,6 +27,15 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
     href="/feed.xml"
   />
   <title>{pageTitle}</title>
+  <script>
+    // Apply stored theme immediately to avoid flash
+    (function() {
+      const stored = localStorage.getItem('theme');
+      if (stored) {
+        document.documentElement.setAttribute('data-theme', stored);
+      }
+    })();
+  </script>
 </head>
 <body>
   <nav class="site-nav">
@@ -49,6 +58,7 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
         />
         <div class="search-results" id="search-results"></div>
       </div>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">◐</button>
     </div>
   </nav>
 
@@ -64,6 +74,40 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
   </footer>
 
   <script>
+    // Theme toggle: cycles system → dark → light → system
+    const LABELS: Record<string, string> = { system: 'system', dark: 'dark', light: 'light' };
+    const themeToggle = document.getElementById('theme-toggle');
+
+    function applyTheme(mode: string | null) {
+      const root = document.documentElement;
+      if (mode === 'dark' || mode === 'light') {
+        root.setAttribute('data-theme', mode);
+      } else {
+        root.removeAttribute('data-theme');
+      }
+      if (themeToggle) {
+        themeToggle.textContent = LABELS[mode ?? 'system'];
+        themeToggle.setAttribute('aria-label', `Theme: ${mode ?? 'system'}`);
+      }
+    }
+
+    // Init button icon from stored value
+    applyTheme(localStorage.getItem('theme'));
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = localStorage.getItem('theme');
+        // system (null) → dark → light → system
+        const next = current === null ? 'dark' : current === 'dark' ? 'light' : null;
+        if (next) {
+          localStorage.setItem('theme', next);
+        } else {
+          localStorage.removeItem('theme');
+        }
+        applyTheme(next);
+      });
+    }
+
     import type Fuse from 'fuse.js';
     import type { FuseResult } from 'fuse.js';
 
