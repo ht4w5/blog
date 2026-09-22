@@ -386,6 +386,24 @@ hr {
   text-decoration: none;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag-pill {
+    color: hsl(var(--hue, 0) 70% 65%);
+  }
+
+  :root:not([data-theme="light"]) .tag-pill:hover {
+    color: hsl(var(--hue, 0) 80% 75%);
+  }
+}
+
+:root[data-theme="dark"] .tag-pill {
+  color: hsl(var(--hue, 0) 70% 65%);
+}
+
+:root[data-theme="dark"] .tag-pill:hover {
+  color: hsl(var(--hue, 0) 80% 75%);
+}
+
 /* Post content */
 .post-header {
   margin-bottom: 2rem;
