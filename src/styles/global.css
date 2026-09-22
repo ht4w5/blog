@@ -135,6 +135,7 @@ pre {
   background: var(--color-code-bg);
   padding: 1em;
   border-radius: 4px;
+  max-width: 100%;
   overflow-x: auto;
   margin: 1em 0;
   line-height: 1.5;
@@ -415,6 +416,7 @@ hr {
 
 .post-content {
   margin-bottom: 3rem;
+  overflow-x: hidden;
 }
 
 .post-content h2 {
@@ -549,12 +551,16 @@ hr {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .post-layout article {
   flex: 1;
   min-width: 0;
   max-width: 720px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 /* Table of Contents — bracket style */
