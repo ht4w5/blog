@@ -8,7 +8,7 @@
   --color-code-bg: #f0f0f0;
   --color-border: #ddd;
   --color-muted: #666;
-  --font-body: 'Noto Serif SC', 'Noto Serif', Georgia, serif;
+  --font-body: 'Noto Serif', 'Noto Serif SC', Georgia, serif;
   --font-mono: 'Noto Sans Mono', 'Courier New', Consolas, monospace;
   --max-width: 720px;
 }
