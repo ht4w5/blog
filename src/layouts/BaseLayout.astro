@@ -76,6 +76,7 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
 
         // Dynamically import Fuse.js
         const Fuse = (await import('fuse.js')).default;
+        if (!searchIndex) return;
         fuse = new Fuse(searchIndex, {
           keys: ['title', 'tags', 'excerpt'],
           threshold: 0.3,
