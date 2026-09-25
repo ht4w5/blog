@@ -27,3 +27,74 @@ const tocHeadings = headings
     </ol>
   </nav>
 )}
+
+<script>
+  // Scrollspy: highlight the TOC entry for the section currently in view,
+  // and keep that entry visible inside the scrollable TOC container.
+  interface TocEntry {
+    link: HTMLAnchorElement;
+    item: HTMLElement;
+    heading: HTMLElement;
+  }
+
+  const toc = document.querySelector<HTMLElement>('.toc');
+
+  if (toc) {
+    const entries: TocEntry[] = [];
+    for (const link of toc.querySelectorAll<HTMLAnchorElement>('.toc a')) {
+      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      const item = link.closest<HTMLElement>('.toc-item');
+      if (heading && item) entries.push({ link, item, heading });
+    }
+
+    let active: TocEntry | null = null;
+
+    function keepVisible(entry: TocEntry): void {
+      const top = entry.item.getBoundingClientRect().top - toc.getBoundingClientRect().top + toc.scrollTop;
+      const bottom = top + entry.item.offsetHeight;
+      if (top < toc.scrollTop) {
+        toc.scrollTop = top;
+      } else if (bottom > toc.scrollTop + toc.clientHeight) {
+        toc.scrollTop = bottom - toc.clientHeight;
+      }
+    }
+
+    function setActive(entry: TocEntry | null): void {
+      if (entry === active) return;
+      if (active) {
+        active.item.classList.remove('is-active');
+        active.link.removeAttribute('aria-current');
+      }
+      active = entry;
+      if (active) {
+        active.item.classList.add('is-active');
+        active.link.setAttribute('aria-current', 'true');
+        keepVisible(active);
+      }
+    }
+
+    // A heading counts as "current" once it passes this line below the top.
+    const OFFSET = 120;
+
+    function update(): void {
+      const marker = window.scrollY + OFFSET;
+      let current: TocEntry | null = null;
+      for (const entry of entries) {
+        if (entry.heading.getBoundingClientRect().top + window.scrollY <= marker) {
+          current = entry;
+        } else {
+          break;
+        }
+      }
+      // At the very bottom, the last heading is the current one.
+      if (entries.length > 0 && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        current = entries[entries.length - 1];
+      }
+      setActive(current);
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+</script>

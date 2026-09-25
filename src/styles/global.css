@@ -607,6 +607,10 @@ hr {
   text-decoration: none;
 }
 
+.toc-item.is-active > a {
+  color: var(--color-link);
+}
+
 @media (max-width: 900px) {
   .post-layout {
     flex-direction: column;
