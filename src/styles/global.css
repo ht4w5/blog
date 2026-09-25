@@ -552,7 +552,9 @@ hr {
   gap: 2rem;
   align-items: flex-start;
   max-width: 100%;
-  overflow: hidden;
+  /* clip, not hidden: `overflow: hidden` becomes the sticky scroll container
+     for .toc and stops it from sticking to the viewport */
+  overflow: clip;
 }
 
 .post-layout article {
