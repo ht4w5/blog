@@ -563,7 +563,7 @@ hr {
   overflow-x: auto;
 }
 
-/* Table of Contents — bracket style */
+/* Table of Contents */
 .toc {
   position: sticky;
   top: 2rem;
@@ -584,14 +584,6 @@ hr {
   user-select: none;
 }
 
-.toc-title::before {
-  content: "[";
-}
-
-.toc-title::after {
-  content: "]";
-}
-
 .toc-list {
   list-style: none;
   padding: 0;
@@ -608,14 +600,6 @@ hr {
 
 .toc a {
   color: var(--color-muted);
-}
-
-.toc a::before {
-  content: "[";
-}
-
-.toc a::after {
-  content: "]";
 }
 
 .toc a:hover {
