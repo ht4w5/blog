@@ -524,6 +524,12 @@ hr {
   font-size: 0.85rem;
 }
 
+.site-footer .footer-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
 /* Heading anchors (rehype-slug) */
 .heading-anchor {
   color: var(--color-border);
