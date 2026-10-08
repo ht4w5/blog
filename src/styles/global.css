@@ -11,6 +11,7 @@
   --font-body: 'Noto Serif', 'Noto Serif SC', Georgia, serif;
   --font-mono: 'Noto Sans Mono', 'Courier New', Consolas, monospace;
   --max-width: 960px;
+  --badge-height: 20px; /* shields.io / README-style badge height */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -526,8 +527,25 @@ hr {
 
 .site-footer .footer-badges {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer .footer-badges li {
+  margin: 0;
+  line-height: 0;
+}
+
+/* Normalize every pasted badge to one height; width follows aspect ratio.
+   Overrides any width/height attributes that come with pasted snippets. */
+.site-footer .footer-badges :is(img, svg) {
+  height: var(--badge-height);
+  width: auto;
+  display: block;
 }
 
 /* Heading anchors (rehype-slug) */

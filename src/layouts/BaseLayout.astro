@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import FooterBadges from '../components/FooterBadges.astro';
 
 interface Props {
   title?: string;
@@ -72,10 +73,7 @@ const pageTitle = title ? `${title} - ${siteTitle}` : siteTitle;
   <footer class="site-footer">
     <div class="container">
       <p>© {new Date().getFullYear()} ht4w5</p>
-      <p class="footer-badges">
-        <a href="/"><img src="/favicon.svg" alt="favicon" width="26.66" height="30" /></a>
-        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="/images/cc-by-nc-sa.svg" alt="CC BY-NC-SA 4.0" width="85.71" height="30"></a>
-      </p>
+      <FooterBadges />
     </div>
   </footer>
 
