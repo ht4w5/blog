@@ -20,6 +20,13 @@ if [[ ! -d "$BUILD_DIR" ]]; then
   exit 1
 fi
 
+# GitHub Pages runs Jekyll on branch deploys, which strips _-prefixed dirs
+# (like _astro/). .nojekyll disables it.
+if [[ ! -f "$BUILD_DIR/.nojekyll" ]]; then
+  echo "==> Adding $BUILD_DIR/.nojekyll (missing from build output)"
+  touch "$BUILD_DIR/.nojekyll"
+fi
+
 echo "==> Cloning $REPO into $TMP_DIR…"
 git clone --depth 1 --branch "$DEPLOY_BRANCH" "$REPO" "$TMP_DIR"
 
