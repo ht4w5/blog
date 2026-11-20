@@ -7,11 +7,16 @@ import { test, expect, type Page } from '@playwright/test';
 
 const POST_URL = /\/blog\/hello-world\/?$/;
 
+// The search results dropdown is a plain container with no ARIA role; its
+// result rows are links, located by their accessible name (post title and
+// date) instead of a CSS selector.
+const resultRow = (page: Page) => page.getByRole('link', { name: /Test\s*2026-09-23/ });
+
 async function searchAndGetRow(page: Page) {
   await page.goto('/');
   const input = page.getByLabel('Search posts');
   await input.fill('test');
-  const row = page.locator('#search-results').getByRole('link').first();
+  const row = resultRow(page);
   await expect(row).toBeVisible();
   // Let the expand-on-focus animation settle: press points below are measured
   // against the row's resting position.
@@ -39,7 +44,7 @@ test('a press-and-release on the left half of a result row opens the post', asyn
   await expect(page.getByRole('heading', { level: 1, name: 'Test' })).toBeVisible();
 
   // Results are gone after navigation …
-  await expect(page.locator('#search-results')).toBeHidden();
+  await expect(row).toBeHidden();
 
   // … and they collapse via an outside click — never merely from a row press.
   await input.fill('test');
@@ -65,15 +70,14 @@ test('results open on focus and input, close on outside click, and match as befo
 }) => {
   await page.goto('/');
   const input = page.getByLabel('Search posts');
-  const results = page.locator('#search-results');
+  const row = resultRow(page);
 
-  await expect(results.getByRole('link')).toHaveCount(0);
+  await expect(row).toHaveCount(0);
 
   // Typing opens results and matches the post by title; the row links to it.
   await input.fill('test');
-  const row = results.getByRole('link').first();
   await expect(row).toBeVisible();
-  await expect(results.getByText('Test')).toBeVisible();
+  await expect(row).toContainText('Test');
   await expect(row).toHaveAttribute('href', '/blog/hello-world');
 
   // An outside click collapses the results …
@@ -86,8 +90,8 @@ test('results open on focus and input, close on outside click, and match as befo
 
   // A query matching nothing reports so.
   await input.fill('zzzqqqxyz');
-  await expect(results.getByText('No results found.')).toBeVisible();
-  await expect(results.getByRole('link')).toHaveCount(0);
+  await expect(page.getByText('No results found.')).toBeVisible();
+  await expect(row).toHaveCount(0);
 });
 
 test.describe('on a touch screen', () => {

@@ -3,7 +3,13 @@
 // unavailable, the snippet text is selected for manual copying instead.
 // Assert only what a visitor observes — visible text and clipboard contents,
 // never CSS property values, markup minutiae, or script internals.
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+// The snippet is plain text in a code block (the code element has no ARIA
+// role), so it is located by the text it shows — not by a CSS selector.
+const SNIPPET_PREFIX =
+  '<a href="https://ht4w5.github.io/"><img src="https://ht4w5.github.io/buttons/ht4w5.png"';
+const snippet = (page: Page) => page.getByText(SNIPPET_PREFIX);
 
 test('Copy puts the snippet on the clipboard and confirms with "copied!"', async ({
   page,
@@ -12,7 +18,7 @@ test('Copy puts the snippet on the clipboard and confirms with "copied!"', async
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
 
-  const shown = await page.locator('.link-to-me-snippet code').textContent();
+  const shown = await snippet(page).textContent();
   expect(shown).toContain('https://ht4w5.github.io/');
 
   // The name pattern matches the control in both label states ("copy" →
@@ -35,7 +41,7 @@ test('without clipboard access the snippet text is selected for manual copying',
   const page = await context.newPage();
   await page.goto('/');
 
-  const shown = await page.locator('.link-to-me-snippet code').textContent();
+  const shown = await snippet(page).textContent();
   await page.getByRole('button', { name: /cop(y|ied)/i }).click();
 
   const selected = await page.evaluate(() => window.getSelection()?.toString() ?? '');
