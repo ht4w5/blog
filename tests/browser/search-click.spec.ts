@@ -1,0 +1,104 @@
+// Search-result click behaviour (ticket 02): a press-and-release anywhere on a
+// result row — left half included — opens the post, and the results bar only
+// ever collapses via an outside click or after navigation, never from a row
+// press. Assert only what a visitor observes: visible results, link
+// destinations, navigation — never CSS values or script internals.
+import { test, expect, type Page } from '@playwright/test';
+
+const POST_URL = /\/blog\/hello-world\/?$/;
+
+async function searchAndGetRow(page: Page) {
+  await page.goto('/');
+  const input = page.getByLabel('Search posts');
+  await input.fill('test');
+  const row = page.locator('#search-results').getByRole('link').first();
+  await expect(row).toBeVisible();
+  // Let the expand-on-focus animation settle: press points below are measured
+  // against the row's resting position.
+  await page.waitForTimeout(300);
+  return { input, row };
+}
+
+test('a press-and-release on the left half of a result row opens the post', async ({ page }) => {
+  const { input, row } = await searchAndGetRow(page);
+  const box = (await row.boundingBox())!;
+
+  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2);
+  await page.mouse.down();
+  // Hold past the input's width transition — the bug slides the row out from
+  // under a held cursor before the release.
+  await page.waitForTimeout(400);
+
+  // The press alone must not collapse the bar.
+  await expect(row).toBeVisible();
+
+  await page.mouse.up();
+
+  // The row click navigates instead of being swallowed.
+  await expect(page).toHaveURL(POST_URL);
+  await expect(page.getByRole('heading', { level: 1, name: 'Test' })).toBeVisible();
+
+  // Results are gone after navigation …
+  await expect(page.locator('#search-results')).toBeHidden();
+
+  // … and they collapse via an outside click — never merely from a row press.
+  await input.fill('test');
+  await expect(row).toBeVisible();
+  await page.getByRole('heading', { level: 1, name: 'Test' }).click();
+  await expect(row).toBeHidden();
+});
+
+test('a press-and-release on the right half of a result row opens the post', async ({ page }) => {
+  const { row } = await searchAndGetRow(page);
+  const box = (await row.boundingBox())!;
+
+  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(400);
+  await page.mouse.up();
+
+  await expect(page).toHaveURL(POST_URL);
+});
+
+test('results open on focus and input, close on outside click, and match as before', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const input = page.getByLabel('Search posts');
+  const results = page.locator('#search-results');
+
+  await expect(results.getByRole('link')).toHaveCount(0);
+
+  // Typing opens results and matches the post by title; the row links to it.
+  await input.fill('test');
+  const row = results.getByRole('link').first();
+  await expect(row).toBeVisible();
+  await expect(results.getByText('Test')).toBeVisible();
+  await expect(row).toHaveAttribute('href', '/blog/hello-world');
+
+  // An outside click collapses the results …
+  await page.getByText('Test description.').click();
+  await expect(row).toBeHidden();
+
+  // … and focusing the input again brings them back.
+  await input.click();
+  await expect(row).toBeVisible();
+
+  // A query matching nothing reports so.
+  await input.fill('zzzqqqxyz');
+  await expect(results.getByText('No results found.')).toBeVisible();
+  await expect(results.getByRole('link')).toHaveCount(0);
+});
+
+test.describe('on a touch screen', () => {
+  test.use({ hasTouch: true });
+
+  test('tapping a result row opens the post', async ({ page }) => {
+    const { row } = await searchAndGetRow(page);
+    const box = (await row.boundingBox())!;
+
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+
+    await expect(page).toHaveURL(POST_URL);
+  });
+});
