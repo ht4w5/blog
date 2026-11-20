@@ -30,4 +30,16 @@ export const buttons: ButtonEntry[] = [
     imageSrc: '/buttons/ht4w5.png',
     href: 'https://ht4w5.github.io',
   },
+  {
+    id: 'cc-by-nc-sa',
+    alt: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International',
+    imageSrc: '/buttons/cc-by-nc-sa.png',
+    href: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+  },
+  {
+    id: 'github',
+    alt: 'ht4w5\'s GitHub',
+    imageSrc: '/buttons/github.png',
+    href: 'https://github.com/ht4w5',
+  },
 ];
