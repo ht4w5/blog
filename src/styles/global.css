@@ -262,8 +262,12 @@ hr {
 .search-results {
   position: absolute;
   top: 100%;
-  left: 0;
+  /* Fixed width anchored to the right edge: the input's width transition
+     shrinks its right-anchored container from the left, and the dropdown must
+     not slide out from under a click that is in flight. */
   right: 0;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-top: none;
