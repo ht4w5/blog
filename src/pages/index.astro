@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ButtonWall from '../components/ButtonWall.astro';
+import LinkToMeBox from '../components/LinkToMeBox.astro';
 import { getCollection } from 'astro:content';
 import { generateExcerpt } from '../utils/excerpt';
 import { tagHue } from '../utils/tag-color';
@@ -101,6 +102,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
   <section class="buttons-section">
     <h2>buttons</h2>
+    <LinkToMeBox />
     <ButtonWall />
   </section>
 </BaseLayout>
