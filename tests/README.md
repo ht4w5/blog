@@ -70,10 +70,9 @@ Two expectation styles are in use, deliberately:
   stripping (Node ≥ 23.6; Node 22.18+ also enables it by default).
 - **Hardcoded literals** — see `footer.test.mjs`. Write the expected labels
   and destinations into the test. Use this when the expectation guards a
-  migration or regression contract and must not move with the data file:
-  the three button destinations migrated from the old footer and the CC
-  BY-NC-SA badge that stays in the footer must stay valid even if
-  `src/data/buttons.ts` is edited by mistake.
+  regression contract and must not move with the data file: the CC BY-NC-SA
+  badge that stays in the footer must stay valid even if the footer or a
+  data file is edited by mistake.
 
 ## Browser-seam scope
 

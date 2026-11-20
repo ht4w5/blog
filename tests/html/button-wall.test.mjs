@@ -94,14 +94,14 @@ test('every button wall image renders at 88×31 with descriptive alt text', asyn
 });
 
 test('linked buttons carry their destination; flair badges render without a link', async () => {
+  // Derived from the data file: whatever the wall currently holds, each entry
+  // renders as its data describes — linked buttons with their destination,
+  // flair badges without any link.
   const html = await loadBuiltPage('index.html');
 
-  let flairBadges = 0;
-  let linkedButtons = 0;
   for (const entry of buttons) {
     const anchor = anchorAround(html, entry);
     if (entry.href) {
-      linkedButtons += 1;
       assert.ok(anchor, `the button ${entry.id} links to its destination`);
       assert.equal(
         attr(anchor.attrs, 'href'),
@@ -112,14 +112,10 @@ test('linked buttons carry their destination; flair badges render without a link
         assertOpensSafelyInNewTab(anchor.attrs, `the button ${entry.id}`);
       }
     } else {
-      flairBadges += 1;
       assert.ok(entryImage(html, entry), `the flair badge ${entry.id} shows its image`);
       assert.ok(!anchor, `the flair badge ${entry.id} renders without a link`);
     }
   }
-
-  assert.ok(flairBadges > 0, 'the wall includes at least one flair badge');
-  assert.ok(linkedButtons > 0, 'the wall includes at least one linked button');
 });
 
 test('the button wall renders on the homepage and on no other page', async () => {

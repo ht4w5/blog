@@ -26,25 +26,8 @@ export interface ButtonEntry {
 export const buttons: ButtonEntry[] = [
   {
     id: 'ht4w5',
-    alt: 'ht4w5 blog button linking to this site',
+    alt: 'ht4w5\'s blog',
     imageSrc: '/buttons/ht4w5.png',
-    href: '/',
-  },
-  {
-    id: 'xjtumen',
-    alt: 'xjtumen button linking to xjtu.app',
-    imageSrc: '/buttons/xjtumen.png',
-    href: 'https://xjtu.app/',
-  },
-  {
-    id: 'github',
-    alt: 'GitHub button linking to ht4w5 on GitHub',
-    imageSrc: '/buttons/github.png',
-    href: 'https://github.com/ht4w5',
-  },
-  {
-    id: 'under-construction',
-    alt: 'Under construction flair badge',
-    imageSrc: '/buttons/under-construction.png',
+    href: 'https://ht4w5.github.io',
   },
 ];

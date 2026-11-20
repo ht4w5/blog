@@ -17,18 +17,7 @@ export interface DirectoryEntry {
  */
 export const directoryEntries = [
   {
-    href: '/about',
-    description: 'Who writes this blog, and why.',
-  },
-  {
-    href: '/tags',
-    description: 'Browse every tag used on the blog.',
-  },
-  {
-    href: '/feed.xml',
-  },
-  {
-    href: 'https://github.com/ht4w5/blog',
-    description: 'The code that builds this site, on GitHub.',
+    href: '/csim',
+    description: 'Cache simulator matrix transpose results. https://github.com/ht4w5/csim.',
   },
 ] satisfies DirectoryEntry[];

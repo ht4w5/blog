@@ -1,4 +1,4 @@
-// Built-HTML tests for the site directory (dist/paths/) and its [paths] nav
+// Built-HTML tests for the site directory (dist/dirs/) and its [dirs] nav
 // item. Assert what a visitor receives — link destinations, visible text and
 // link semantics — never CSS values, markup minutiae, or script internals.
 import test from 'node:test';
@@ -36,7 +36,7 @@ function findEntryAnchor(html, entry) {
 }
 
 test('site directory renders directory entries in data-file order with the URL as label and descriptions', async () => {
-  const html = await loadBuiltPage('paths/index.html');
+  const html = await loadBuiltPage('dirs/index.html');
 
   const anchors = directoryEntries.map((entry) => {
     const anchor = findEntryAnchor(html, entry);
@@ -67,7 +67,7 @@ test('site directory renders directory entries in data-file order with the URL a
 });
 
 test('root-relative directory entries link in the same tab; absolute-URL entries open in a new tab safely', async () => {
-  const html = await loadBuiltPage('paths/index.html');
+  const html = await loadBuiltPage('dirs/index.html');
 
   for (const entry of directoryEntries) {
     const anchor = findEntryAnchor(html, entry);
@@ -86,11 +86,11 @@ test('root-relative directory entries link in the same tab; absolute-URL entries
   }
 });
 
-test('header nav shows [paths] linking to the site directory on representative pages', async () => {
+test('header nav shows [dirs] linking to the site directory on representative pages', async () => {
   const pages = ['index.html', 'about/index.html', 'blog/hello-world/index.html'];
 
   for (const page of pages) {
     const html = await loadBuiltPage(page);
-    assert.match(html, /<a href="\/paths">\[paths\]<\/a>/, `${page} should link [paths] to /paths`);
+    assert.match(html, /<a href="\/dirs">\[dirs\]<\/a>/, `${page} should link [dirs] to /dirs`);
   }
 });
