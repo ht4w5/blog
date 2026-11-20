@@ -24,3 +24,7 @@ _Avoid_: badge, chip
 **Flair badge**:
 An 88×31 pixel decorative image with no destination.
 _Avoid_: static badge, non-link button
+
+**Backref**:
+The `↩` return link at a footnote definition pointing back to the reference that cited it.
+_Avoid_: back-link, return link, footnote anchor
