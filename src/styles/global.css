@@ -652,3 +652,52 @@ hr {
     max-height: none;
   }
 }
+
+/* ===== Button wall (homepage) ===== */
+.buttons-section {
+  margin-top: 2.5rem;
+}
+
+/* Dense wrapping wall of 88×31 buttons and flair badges. */
+.button-wall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.button-wall li {
+  margin: 0;
+  line-height: 0;
+}
+
+/* Every wall image renders at exactly 88×31; pixel art stays crisp on
+   high-DPI screens (pixelated where supported, crisp-edges fallback).
+   Plain <img> tags, so animated GIF art animates natively. */
+.button-wall img {
+  width: 88px;
+  height: 31px;
+  display: block;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Linked buttons get a subtle hover: a small lift plus a crisp border. */
+.button-wall .button {
+  display: block;
+  line-height: 0;
+  transition: transform 0.15s ease;
+}
+
+.button-wall .button:hover {
+  transform: translateY(-2px);
+  outline: 1px solid var(--color-link);
+}
+
+/* Flair badges are decorative: no pointer cursor, no hover affordance. */
+.button-wall .flair-badge {
+  cursor: default;
+}
+/* ===== End button wall ===== */

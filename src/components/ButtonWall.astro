@@ -1,0 +1,41 @@
+---
+// Renders the homepage button wall: a dense wrapping row of 88×31 images.
+// An entry with a destination is a linked button; without one it is a flair
+// badge (decorative — no link, no click affordance). Plain <img> tags keep
+// animated GIF art animating natively, with no framework image optimization.
+import { buttons } from '../data/buttons';
+
+function isExternal(href: string): boolean {
+  return /^https?:\/\//.test(href);
+}
+---
+
+<ul class="button-wall">
+  {
+    buttons.map((entry) =>
+      entry.href ? (
+        <li>
+          <a
+            class="button"
+            href={entry.href}
+            title={entry.title}
+            {...(isExternal(entry.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            <img src={entry.imageSrc} alt={entry.alt} width="88" height="31" loading="lazy" />
+          </a>
+        </li>
+      ) : (
+        <li class="flair-badge">
+          <img
+            src={entry.imageSrc}
+            alt={entry.alt}
+            width="88"
+            height="31"
+            loading="lazy"
+            title={entry.title}
+          />
+        </li>
+      )
+    )
+  }
+</ul>
