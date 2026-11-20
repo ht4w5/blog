@@ -4,10 +4,14 @@
 
 **Blocked by:** 04 — Button wall on the homepage with placeholder buttons
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The link-to-me box leads the button section, showing the site's own button beside the snippet in code-block style
-- [ ] The snippet is the raw anchor-wrapping-image HTML with absolute URLs to the site root and the button asset
-- [ ] The Copy button copies the snippet and shows "copied!" feedback
-- [ ] Without clipboard access, the snippet text becomes selected instead
-- [ ] Built-HTML tests cover the box's presence and the snippet's content
+- [x] The link-to-me box leads the button section, showing the site's own button beside the snippet in code-block style
+- [x] The snippet is the raw anchor-wrapping-image HTML with absolute URLs to the site root and the button asset
+- [x] The Copy button copies the snippet and shows "copied!" feedback
+- [x] Without clipboard access, the snippet text becomes selected instead
+- [x] Built-HTML tests cover the box's presence and the snippet's content
+
+## Comments
+
+- Resolved on `integration/site-directory-button-wall` (`1e0a6ec`): link-to-me box leads the button section with the site's own button and the absolute-URL embed snippet in the blog's code-block style; Copy button with "copied!" feedback and a text-selection fallback. Browser tests cover the Copy interaction (justified extension of the browser seam — see `tests/README.md`). Post-review: behavioural assertions + text-based locators (`4ac1eda`).

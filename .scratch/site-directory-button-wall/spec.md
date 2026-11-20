@@ -1,6 +1,6 @@
 # Spec: Site directory page, homepage button wall, and search-result click fix
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 ## Problem Statement
 
@@ -92,3 +92,5 @@ Three problems on the blog, from a reader's and maintainer's perspective:
 ## Comments
 
 - Migrated from GitHub issue ht4w5/blog#1 when the issue tracker moved to local markdown.
+
+- Implemented on `integration/site-directory-button-wall`; tickets 01–06 all resolved. Two-axis code review (Standards + Spec) run against `main`; findings fixed in `4ac1eda`. Four documented suppressions: spec-mandated `id` field kept despite being unused (Speculative Generality), stylesheet split skipped (Out of Scope), the `under-construction` flair entry kept (ticket 04 requires flair rendering to be test-covered), flair pointer-cursor left untested (CSS-property assertions are barred by the repo's test rules).

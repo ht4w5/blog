@@ -4,9 +4,13 @@
 
 **Blocked by:** 01 — Test foundation: built-HTML and browser test seams
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] A real-browser test drives a mousedown+mouseup+click sequence on the left half of a result row and observes navigation to the post
-- [ ] The same test shows results collapsing only via outside click or after navigation — never swallowing the row click
-- [ ] Right-half clicks still work
-- [ ] Search open/close behaviour and result matching are unchanged
+- [x] A real-browser test drives a mousedown+mouseup+click sequence on the left half of a result row and observes navigation to the post
+- [x] The same test shows results collapsing only via outside click or after navigation — never swallowing the row click
+- [x] Right-half clicks still work
+- [x] Search open/close behaviour and result matching are unchanged
+
+## Comments
+
+- Resolved on `integration/site-directory-button-wall` (`80a5e98`, `faa9132`): the search dropdown is fixed-width and right-anchored so the input's blur transition can't slide it mid-click. Browser spec covers left-half press-release navigation, collapse-only-via-outside-click, right-half clicks, unchanged open/close and matching, and touch tap. Post-review: role-based locators (`4ac1eda`).

@@ -4,10 +4,14 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] A test command runs from a clean checkout and exits green
-- [ ] A built-HTML smoke test builds the site and asserts something observable about the emitted homepage
-- [ ] A Playwright smoke test starts the preview server and asserts something observable in a real browser
-- [ ] Tests assert only external behaviour (rendered HTML, observable interaction), never CSS property values or script internals
-- [ ] A short test README (or equivalent) documents the two seams and how to add assertions to each
+- [x] A test command runs from a clean checkout and exits green
+- [x] A built-HTML smoke test builds the site and asserts something observable about the emitted homepage
+- [x] A Playwright smoke test starts the preview server and asserts something observable in a real browser
+- [x] Tests assert only external behaviour (rendered HTML, observable interaction), never CSS property values or script internals
+- [x] A short test README (or equivalent) documents the two seams and how to add assertions to each
+
+## Comments
+
+- Resolved on `integration/site-directory-button-wall` (`bfdca44`, `3b2dd54`): `pnpm test` builds the site, runs Node's built-in runner over `dist/` HTML, and runs Playwright against `astro preview`. Seams documented in `tests/README.md`. Post-review: `playwright install chromium` wired into the test command for clean checkouts (`4ac1eda`).

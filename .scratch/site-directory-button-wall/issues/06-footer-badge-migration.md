@@ -4,9 +4,13 @@
 
 **Blocked by:** 04 — Button wall on the homepage with placeholder buttons
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The four badges appear in the wall as 88×31 buttons with destinations preserved
-- [ ] The footer on every page shows only the copyright line
-- [ ] Old footer-badge markup and CSS are removed; nothing else renders in the footer
-- [ ] Built-HTML tests assert the clean footer across representative pages
+- [x] The four badges appear in the wall as 88×31 buttons with destinations preserved
+- [x] The footer on every page shows only the copyright line
+- [x] Old footer-badge markup and CSS are removed; nothing else renders in the footer
+- [x] Built-HTML tests assert the clean footer across representative pages
+
+## Comments
+
+- Resolved on `integration/site-directory-button-wall` (`99e26f7`, `97e84b6`): footer reduced to the copyright line on every page; `FooterBadges.astro` and its CSS (incl. `--badge-height`) removed; the four destinations verified preserved in the button wall with regression coverage. Post-review: shared test helpers (`4ac1eda`).

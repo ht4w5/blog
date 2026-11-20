@@ -4,10 +4,14 @@
 
 **Blocked by:** 01 — Test foundation: built-HTML and browser test seams
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The nav shows `[paths]` on every page and it leads to the site directory
-- [ ] Entries render in data-file order with their label and optional description
-- [ ] Root-relative entries link in the same tab; absolute-URL entries open in a new tab with safe rel attributes
-- [ ] Adding or reordering an entry is a data-file edit requiring no markup changes
-- [ ] Built-HTML tests cover the directory page and the nav item
+- [x] The nav shows `[paths]` on every page and it leads to the site directory
+- [x] Entries render in data-file order with their label and optional description
+- [x] Root-relative entries link in the same tab; absolute-URL entries open in a new tab with safe rel attributes
+- [x] Adding or reordering an entry is a data-file edit requiring no markup changes
+- [x] Built-HTML tests cover the directory page and the nav item
+
+## Comments
+
+- Resolved on `integration/site-directory-button-wall` (`907a2c0`, `0888800`, `9566f7b`, `812d430`): `/paths` page driven by `src/data/site-directory.ts`, `[paths]` nav item after `[tags]`/before `[feed]`, absolute-URL directory entries open safely in a new tab. Post-review: shared external-link helper (`4ac1eda`).
