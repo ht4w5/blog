@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { directoryEntries, type DirectoryEntry } from '../data/site-directory';
+
+// Absolute-URL (http/https) directory entries open in a new tab; root-relative
+// ones stay in the same tab.
+const isAbsoluteHref = (href: DirectoryEntry['href']): boolean => /^https?:\/\//.test(href);
+---
+
+<BaseLayout title="Site directory" description="Every destination published under this domain.">
+  <h1>Site directory</h1>
+  <p>
+    This site directory lists everything published under this domain, along with a few
+    favourite destinations elsewhere on the web. Each directory entry includes a short
+    description so you know what awaits before you click.
+  </p>
+
+  <!-- Site directory entries reuse the post-list look; order comes from the data file. -->
+  <ul class="post-list">
+    {
+      directoryEntries.map((entry) => (
+        <li class="post-item">
+          <h2>
+            <a
+              href={entry.href}
+              target={isAbsoluteHref(entry.href) ? '_blank' : undefined}
+              rel={isAbsoluteHref(entry.href) ? 'noopener noreferrer' : undefined}
+            >{entry.label}</a>
+          </h2>
+          {entry.description && <p class="post-excerpt">{entry.description}</p>}
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
