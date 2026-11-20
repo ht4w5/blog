@@ -1,6 +1,6 @@
 // Built-HTML tests for GFM footnotes on the Go sync.Pool slices post
-// (src/content/blog/the-right-way-to-reuse-slices-in-go/ — in-flight fixture,
-// used as-is). Asserts visitor-visible content and link destinations: every
+// (src/content/blog/pooling-slices-in-go-without-extra-allocations/). Asserts
+// visitor-visible content and link destinations: every
 // footnote reference points at its footnote definition, every Backref (↩)
 // returns to its footnote reference, and the table of contents stays free of
 // the screen-reader-only "Footnotes" heading. Never CSS property values or
@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
 import { anchors, attr, ids, visibleText } from './helpers.mjs';
 
-const FOOTNOTE_POST = 'blog/the-right-way-to-reuse-slices-in-go/index.html';
+const FOOTNOTE_POST = 'blog/pooling-slices-in-go-without-extra-allocations/index.html';
 
 /** The table-of-contents region of a built page, from <nav class="toc" to </nav>. */
 function tocRegion(html) {
