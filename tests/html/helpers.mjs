@@ -5,10 +5,7 @@
 // first.
 import assert from 'node:assert/strict';
 
-/** A heading element whose rendered text is the section heading `buttons`. */
-export const HEADING = /<h[1-6][^>]*>buttons<\/h[1-6]>/;
-
-/** The footer copyright line — the only text the footer renders. */
+/** The footer copyright line. */
 export const COPYRIGHT = /© \d{4} ht4w5/;
 
 /** The value of an attribute in a rendered tag, or null. */
@@ -61,27 +58,6 @@ export function images(html) {
     width: attr(m[0], 'width'),
     height: attr(m[0], 'height'),
   }));
-}
-
-/** Every code block's decoded, trimmed text with its document position. */
-export function codeBlocks(html) {
-  return [
-    ...html.matchAll(/<pre[^>]*>[\s\S]*?<code[^>]*>([\s\S]*?)<\/code>[\s\S]*?<\/pre>/g),
-  ].map((m) => ({ text: decodeEntities(m[1]).trim(), index: m.index }));
-}
-
-/**
- * The button wall region: from the `buttons` heading to the end of its
- * section (inclusive when `includeSectionEnd` is set). Null when the page
- * shows no `buttons` heading.
- */
-export function wallRegion(html, { includeSectionEnd = false } = {}) {
-  const heading = html.match(HEADING);
-  if (!heading) return null;
-  const end = html.indexOf('</section>', heading.index);
-  const stop =
-    end === -1 ? html.length : includeSectionEnd ? end + '</section>'.length : end;
-  return html.slice(heading.index, stop);
 }
 
 /** Assert a destination opens safely in a new tab (external-link semantics). */

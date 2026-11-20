@@ -60,28 +60,30 @@ on CSS property values, markup structure minutiae, or script internals.
 
 Two expectation styles are in use, deliberately:
 
-- **Derived from the data file** — see `site-directory.test.mjs`. Import the
-  typed data module (e.g. `src/data/site-directory.ts`) and derive the
-  expectations from it. Use this when the rendering contract is "editing the
-  data file is data-only": the page must track the data file's labels,
-  destinations, and order, so a data edit must not require a test edit.
+- **Derived from the data file** — see `site-directory.test.mjs` and
+  `button-wall.test.mjs`. Import the typed data module (e.g.
+  `src/data/site-directory.ts`) and derive the expectations from it. Use this
+  when the rendering contract is "editing the data file is data-only": the
+  page must track the data file's destinations, descriptions, and order, so a
+  data edit must not require a test edit.
   Importing the TS data modules relies on Node's built-in TypeScript type
   stripping (Node ≥ 23.6; Node 22.18+ also enables it by default).
 - **Hardcoded literals** — see `footer.test.mjs`. Write the expected labels
   and destinations into the test. Use this when the expectation guards a
   migration or regression contract and must not move with the data file:
-  the four button destinations migrated from the old footer must stay valid
-  even if `src/data/buttons.ts` is edited by mistake.
+  the three button destinations migrated from the old footer and the CC
+  BY-NC-SA badge that stays in the footer must stay valid even if
+  `src/data/buttons.ts` is edited by mistake.
 
 ## Browser-seam scope
 
 The spec's Testing Decisions describe the browser seam as covering "exactly
 one thing" (the search-result click fix). The ticket checklists and user
 stories require more observable browser coverage: ticket 02's right-half
-clicks and unchanged open/close behaviour, ticket 05's Copy feedback and
-selection fallback, and user story 30's tap. Those browser tests stay; the
-table records which ticket checklist item or user story each browser test
-covers, so the extension is deliberate and traceable:
+clicks and unchanged open/close behaviour, and user story 30's tap. Those
+browser tests stay; the table records which ticket checklist item or user
+story each browser test covers, so the extension is deliberate and
+traceable:
 
 | Test | Covers |
 | --- | --- |
@@ -90,5 +92,3 @@ covers, so the extension is deliberate and traceable:
 | `search-click.spec.ts` — right-half press-and-release opens the post | ticket 02 checklist item 3 |
 | `search-click.spec.ts` — results open on focus and input, close on outside click, matching unchanged | ticket 02 checklist item 4; user story 31 |
 | `search-click.spec.ts` — tapping a row opens the post on a touch screen | user story 30 |
-| `link-to-me.spec.ts` — Copy puts the snippet on the clipboard and confirms with "copied!" | ticket 05 checklist item 3; user story 21 |
-| `link-to-me.spec.ts` — without clipboard access the snippet text is selected | ticket 05 checklist item 4; user story 22 |

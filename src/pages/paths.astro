@@ -15,13 +15,14 @@ import { externalLinkAttrs } from '../utils/links';
     description so you know what awaits before you click.
   </p>
 
-  <!-- Site directory entries reuse the post-list look; order comes from the data file. -->
+  <!-- Site directory entries reuse the post-list look; each label is the
+       entry's URL in monospace. Order comes from the data file. -->
   <ul class="post-list">
     {
       directoryEntries.map((entry) => (
         <li class="post-item">
           <h2>
-            <a href={entry.href} {...externalLinkAttrs(entry.href)}>{entry.label}</a>
+            <a class="directory-url" href={entry.href} {...externalLinkAttrs(entry.href)}>{entry.href}</a>
           </h2>
           {entry.description && <p class="post-excerpt">{entry.description}</p>}
         </li>

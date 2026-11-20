@@ -18,3 +18,4 @@
 ## Comments
 
 - Resolved on `integration/site-directory-button-wall` (`8f88d4c`, `9e20ff5`): homepage `buttons` section with the button wall driven by `src/data/buttons.ts`, flair badges without click affordance, exact 88×31 with crisp pixel rendering, placeholder art in `public/buttons/` (drop-in replacement). The four migrated buttons were seeded here (cross-ticket decision) so tickets 05/06 could build on them. Post-review: whole-dist sweep proves the wall renders on the homepage only (`4ac1eda`).
+- Amended after maintainer review: the homepage no longer shows a `buttons` heading — a plain separator sits between the posts and the wall instead. The CC BY-NC-SA badge stays in the footer "like before" rather than becoming a wall button, so the wall carries three migrated buttons plus the flair badge.

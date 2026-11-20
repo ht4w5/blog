@@ -15,3 +15,4 @@
 ## Comments
 
 - Resolved on `integration/site-directory-button-wall` (`907a2c0`, `0888800`, `9566f7b`, `812d430`): `/paths` page driven by `src/data/site-directory.ts`, `[paths]` nav item after `[tags]`/before `[feed]`, absolute-URL directory entries open safely in a new tab. Post-review: shared external-link helper (`4ac1eda`).
+- Amended after maintainer review: the `label` field is merged into `href` — a directory entry's label is its URL itself (e.g. `/tags`, `https://github.com/...`), rendered in monospace. Entries are now `{ href, description? }`.

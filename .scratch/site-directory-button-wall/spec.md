@@ -94,3 +94,5 @@ Three problems on the blog, from a reader's and maintainer's perspective:
 - Migrated from GitHub issue ht4w5/blog#1 when the issue tracker moved to local markdown.
 
 - Implemented on `integration/site-directory-button-wall`; tickets 01–06 all resolved. Two-axis code review (Standards + Spec) run against `main`; findings fixed in `4ac1eda`. Four documented suppressions: spec-mandated `id` field kept despite being unused (Speculative Generality), stylesheet split skipped (Out of Scope), the `under-construction` flair entry kept (ticket 04 requires flair rendering to be test-covered), flair pointer-cursor left untested (CSS-property assertions are barred by the repo's test rules).
+
+- Amended after maintainer review: (1) the homepage button wall is introduced by a plain separator instead of a `buttons` heading; (2) the link-to-me box was removed entirely; (3) the CC BY-NC-SA badge stays in the footer like before instead of becoming a wall button — the migration covers the remaining three badges; (4) in the site directory, `href` and `label` are merged: the URL itself is the label, rendered in monospace.

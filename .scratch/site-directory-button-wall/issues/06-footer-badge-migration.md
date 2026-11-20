@@ -14,3 +14,4 @@
 ## Comments
 
 - Resolved on `integration/site-directory-button-wall` (`99e26f7`, `97e84b6`): footer reduced to the copyright line on every page; `FooterBadges.astro` and its CSS (incl. `--badge-height`) removed; the four destinations verified preserved in the button wall with regression coverage. Post-review: shared test helpers (`4ac1eda`).
+- Amended after maintainer review: the CC BY-NC-SA badge stays in the footer as before (old paste-zone component and height-normalized rendering restored for it). The footer is the copyright line plus that badge; the migration covers the other three buttons (self, xjtumen, GitHub).

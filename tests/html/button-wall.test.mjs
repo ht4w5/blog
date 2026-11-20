@@ -2,105 +2,119 @@
 // visitor receives — visible text, link destinations, image alt text, and
 // document order of visible content — never CSS property values, markup
 // minutiae, or script internals. Run via `pnpm test`, which builds first.
+//
+// Expectations derive from src/data/buttons.ts (the maintainer-facing wall
+// data), so data-file edits stay data-only while the rendering contract
+// stays under test. See tests/README.md ("Expectation styles").
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage, listBuiltPages } from './load-page.mjs';
-import {
-  HEADING,
-  COPYRIGHT,
-  attr,
-  wallRegion,
-  images,
-  links,
-  visibleText,
-  assertOpensSafelyInNewTab,
-} from './helpers.mjs';
+import { attr, links, images, assertOpensSafelyInNewTab } from './helpers.mjs';
+import { buttons } from '../../src/data/buttons.ts';
 
-test('homepage ends with the buttons section after the post list and pagination', async () => {
-  const html = await loadBuiltPage('index.html');
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-  const heading = html.match(HEADING);
-  assert.ok(heading, 'homepage shows a heading with the text "buttons"');
-
-  // Document order of visible content: every post title link precedes the
-  // buttons heading, so the section comes after the post list.
-  const destinations = links(html);
-  const postLinks = destinations.filter((link) => link.href.startsWith('/blog/'));
-  assert.ok(postLinks.length > 0, 'homepage shows the post list');
-  for (const link of postLinks) {
-    assert.ok(
-      link.index < heading.index,
-      `the post link ${link.href} comes before the buttons section`
-    );
-  }
-
-  // Pagination links, when the build emits any, precede the heading too.
-  for (const link of destinations.filter((link) => link.href.startsWith('/page/'))) {
-    assert.ok(
-      link.index < heading.index,
-      `the pagination link ${link.href} comes before the buttons section`
-    );
-  }
-
-  // The footer's copyright line is the page's closing text, so the buttons
-  // section comes before the footer.
-  const copyright = html.search(COPYRIGHT);
-  assert.ok(copyright !== -1, 'homepage shows the footer copyright line');
-  assert.ok(heading.index < copyright, 'the buttons section is before the footer');
-
-  // The `buttons` heading is the last heading in main: the buttons section
-  // is the page's last section.
-  const headings = [...html.matchAll(/<(h[1-6])[^>]*>([\s\S]*?)<\/\1>/g)];
-  const lastHeading = headings.at(-1);
-  assert.ok(lastHeading, 'homepage shows section headings');
-  assert.equal(
-    visibleText(lastHeading[2]).trim(),
-    'buttons',
-    'the buttons heading is the last heading in main'
+/** The image tag of a wall entry on the page, or null. */
+function entryImage(html, entry) {
+  const match = html.match(
+    new RegExp(`<img\\s[^>]*src="${escapeRegExp(entry.imageSrc)}"[^>]*>`)
   );
+  return match ? match[0] : null;
+}
+
+/**
+ * The anchor wrapping a wall entry's image (attrs + full tag), or null when
+ * the image is not linked. An image is wrapped when an anchor opens before
+ * it and does not close before it.
+ */
+function anchorAround(html, entry) {
+  const match = html.match(
+    new RegExp(
+      `<a\\s([^>]*)>(?:(?!<\\/a>)[\\s\\S])*?<img\\s[^>]*src="${escapeRegExp(entry.imageSrc)}"[^>]*>`
+    )
+  );
+  return match ? { attrs: match[1], tag: match[0] } : null;
+}
+
+test('the button wall follows the posts, separated from them', async () => {
+  const html = await loadBuiltPage('index.html');
+  const wallImages = images(html).filter((img) =>
+    buttons.some((entry) => img.src === entry.imageSrc)
+  );
+  assert.ok(wallImages.length > 0, 'homepage shows the button wall');
+
+  // A visible separator sits between the posts and the buttons.
+  const separator = html.indexOf('<hr');
+  assert.ok(separator !== -1, 'homepage shows a separator before the buttons');
+  assert.ok(
+    separator < wallImages[0].index,
+    'the separator comes before the buttons'
+  );
+
+  // Document order of visible content: every post title link (and any
+  // pagination link) comes before the separator, so the wall follows the
+  // posts; the wall comes before the footer's copyright line.
+  const destinations = links(html);
+  for (const link of destinations.filter((l) => l.href.startsWith('/blog/'))) {
+    assert.ok(
+      link.index < separator,
+      `the post link ${link.href} comes before the separator`
+    );
+  }
+  for (const link of destinations.filter((l) => l.href.startsWith('/page/'))) {
+    assert.ok(
+      link.index < separator,
+      `the pagination link ${link.href} comes before the separator`
+    );
+  }
+  const copyright = html.search(/© \d{4} ht4w5/);
+  assert.ok(copyright !== -1, 'homepage shows the footer copyright line');
+  for (const img of wallImages) {
+    assert.ok(img.index < copyright, 'the button wall is before the footer');
+  }
 });
 
 test('every button wall image renders at 88×31 with descriptive alt text', async () => {
   const html = await loadBuiltPage('index.html');
-  const region = wallRegion(html);
-  assert.ok(region, 'homepage has a button wall');
 
-  const wallImages = images(region);
-  assert.ok(wallImages.length > 0, 'the button wall renders images');
+  for (const entry of buttons) {
+    const img = entryImage(html, entry);
+    assert.ok(img, `the wall shows ${entry.id}`);
 
-  for (const img of wallImages) {
-    assert.equal(img.width, '88', `image is 88 wide: ${img.tag}`);
-    assert.equal(img.height, '31', `image is 31 tall: ${img.tag}`);
+    assert.equal(attr(img, 'width'), '88', `image is 88 wide: ${img}`);
+    assert.equal(attr(img, 'height'), '31', `image is 31 tall: ${img}`);
     assert.ok(
-      img.alt && img.alt.trim().length > 0,
-      `image has descriptive alt text: ${img.tag}`
+      entry.alt.trim().length > 0,
+      `the data module gives ${entry.id} descriptive alt text`
     );
+    assert.equal(attr(img, 'alt'), entry.alt, `image shows its alt text: ${img}`);
   }
 });
 
-test('flair badges render without a link; linked buttons carry their href', async () => {
+test('linked buttons carry their destination; flair badges render without a link', async () => {
   const html = await loadBuiltPage('index.html');
-  const region = wallRegion(html);
-  assert.ok(region, 'homepage has a button wall');
-
-  const items = [...region.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map((m) => m[1]);
-  assert.ok(items.length > 0, 'the button wall renders entries');
 
   let flairBadges = 0;
   let linkedButtons = 0;
-  for (const item of items) {
-    const anchor = item.match(/<a\s[^>]*>/)?.[0];
-    if (anchor) {
+  for (const entry of buttons) {
+    const anchor = anchorAround(html, entry);
+    if (entry.href) {
       linkedButtons += 1;
-      const href = attr(anchor, 'href');
-      assert.ok(href && href.trim().length > 0, `linked button carries its href: ${anchor}`);
-      if (/^https?:\/\//.test(href)) {
-        assertOpensSafelyInNewTab(anchor, 'the linked button');
+      assert.ok(anchor, `the button ${entry.id} links to its destination`);
+      assert.equal(
+        attr(anchor.attrs, 'href'),
+        entry.href,
+        `the button ${entry.id} links to ${entry.href}`
+      );
+      if (/^https?:\/\//.test(entry.href)) {
+        assertOpensSafelyInNewTab(anchor.attrs, `the button ${entry.id}`);
       }
     } else {
       flairBadges += 1;
-      assert.ok(item.includes('<img'), `flair badge renders its image: ${item}`);
-      assert.ok(!item.includes('href'), `flair badge renders without a link: ${item}`);
+      assert.ok(entryImage(html, entry), `the flair badge ${entry.id} shows its image`);
+      assert.ok(!anchor, `the flair badge ${entry.id} renders without a link`);
     }
   }
 
@@ -108,7 +122,7 @@ test('flair badges render without a link; linked buttons carry their href', asyn
   assert.ok(linkedButtons > 0, 'the wall includes at least one linked button');
 });
 
-test('the buttons section renders on the homepage and on no other page', async () => {
+test('the button wall renders on the homepage and on no other page', async () => {
   // A whole-dist sweep: every emitted HTML page — pagination pages included
   // whenever the build emits any — is checked, so absence can never silently
   // go unverified.
@@ -118,12 +132,14 @@ test('the buttons section renders on the homepage and on no other page', async (
   for (const page of pages) {
     const html = await loadBuiltPage(page);
     const onHomepage = page === 'index.html';
-    assert.equal(
-      HEADING.test(html),
-      onHomepage,
-      onHomepage
-        ? `the buttons section renders on ${page}`
-        : `the button wall does not appear on ${page}`
-    );
+    for (const entry of buttons) {
+      assert.equal(
+        entryImage(html, entry) !== null,
+        onHomepage,
+        onHomepage
+          ? `the button wall renders on ${page}`
+          : `the button wall does not appear on ${page}`
+      );
+    }
   }
 });

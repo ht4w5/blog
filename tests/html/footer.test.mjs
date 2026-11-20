@@ -1,13 +1,13 @@
 // Built-HTML tests for the footer and the migrated buttons. The footer shows
-// only the copyright line on every page, and the four buttons that used to
-// live there now belong to the homepage button wall with their destinations
-// preserved. Assert rendered HTML a visitor receives — never CSS property
-// values, markup minutiae, or script internals. Run via `pnpm test`, which
-// builds first.
+// the copyright line and the CC BY-NC-SA badge that has always lived there;
+// the three buttons that used to live in the footer now belong to the
+// homepage button wall with their destinations preserved. Assert rendered
+// HTML a visitor receives — never CSS property values, markup minutiae, or
+// script internals. Run via `pnpm test`, which builds first.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
-import { COPYRIGHT, wallRegion, visibleText } from './helpers.mjs';
+import { COPYRIGHT, attr, visibleText } from './helpers.mjs';
 
 // Representative pages: the homepage, the site directory, a plain page, and a
 // blog post. Every route renders the same footer.
@@ -18,12 +18,15 @@ const PAGES = [
   'blog/hello-world/index.html',
 ];
 
-// The four destinations of the buttons migrated from the old footer. Kept as
-// literals (not read from src/data/buttons.ts) so a data regression cannot
-// rewrite the expectation.
+// The footer badge that stays where it always was, and the destinations of
+// the buttons migrated from the old footer. Kept as literals (not read from
+// src/data/buttons.ts) so a data regression cannot rewrite the expectation.
+const FOOTER_BADGE = {
+  href: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+  src: '/images/cc-by-nc-sa.svg',
+};
 const MIGRATED_DESTINATIONS = [
   '/', // this site
-  'https://creativecommons.org/licenses/by-nc-sa/4.0/',
   'https://xjtu.app/',
   'https://github.com/ht4w5',
 ];
@@ -37,8 +40,12 @@ function footerRegion(html) {
   return html.slice(start, end + '</footer>'.length);
 }
 
-function escapeRegExp(text) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** Every anchor's attributes and inner content, each bounded by its own link. */
+function anchors(html) {
+  return [...html.matchAll(/<a\s([^>]*)>((?:(?!<\/a>)[\s\S])*?)<\/a>/g)].map((m) => ({
+    attrs: m[1],
+    inner: m[2],
+  }));
 }
 
 for (const page of PAGES) {
@@ -48,15 +55,28 @@ for (const page of PAGES) {
     assert.match(footer, COPYRIGHT, 'footer shows the copyright line');
   });
 
-  test(`footer on ${page} shows nothing besides the copyright line`, async () => {
+  test(`footer on ${page} shows the CC BY-NC-SA badge and nothing besides`, async () => {
     const html = await loadBuiltPage(page);
     const footer = footerRegion(html);
 
-    // The old footer button strip was images wrapped in links; none of that
-    // may remain, and no other image or link may render in the footer.
-    assert.ok(!/<img[\s>]/.test(footer), 'footer has no images');
+    // The CC badge links to the licence, as it always has.
+    const badgeAnchor = anchors(footer).find((a) => attr(a.attrs, 'href') === FOOTER_BADGE.href);
+    assert.ok(badgeAnchor, 'footer links the CC badge to the licence');
+
+    const badgeImg = badgeAnchor.inner.match(/<img\s[^>]*>/);
+    assert.ok(badgeImg, 'the CC badge shows its image');
+    assert.equal(attr(badgeImg[0], 'src'), FOOTER_BADGE.src, 'the CC badge art is unchanged');
+    assert.ok(
+      attr(badgeImg[0], 'alt')?.trim().length,
+      'the CC badge has descriptive alt text'
+    );
+
+    // Nothing else renders in the footer: no other image, icon, or link.
+    const images = [...footer.matchAll(/<img\s[^>]*>/g)];
+    assert.equal(images.length, 1, 'the CC badge is the footer’s only image');
     assert.ok(!/<svg[\s>]/.test(footer), 'footer has no inline icons');
-    assert.ok(!/<a[\s>]/.test(footer), 'footer has no links');
+    const hrefs = anchors(footer).map((a) => attr(a.attrs, 'href'));
+    assert.deepEqual(hrefs, [FOOTER_BADGE.href], 'the CC badge is the footer’s only link');
 
     // Visible text is exactly the copyright line — nothing else renders.
     const visible = visibleText(footer);
@@ -68,18 +88,21 @@ for (const page of PAGES) {
 
 test('the button wall keeps every migrated destination with its 88×31 button', async () => {
   const html = await loadBuiltPage('index.html');
-  const wall = wallRegion(html, { includeSectionEnd: true });
-  assert.ok(wall, 'homepage has a button wall');
 
   for (const destination of MIGRATED_DESTINATIONS) {
-    const anchor = wall.match(
-      new RegExp(`<a\\s[^>]*href="${escapeRegExp(destination)}"[^>]*>([\\s\\S]*?)</a>`)
+    const button = anchors(html).find(
+      (a) => attr(a.attrs, 'href') === destination && /<img\s[^>]*>/.test(a.inner)
     );
-    assert.ok(anchor, `button wall links to ${destination}`);
+    assert.ok(button, `button wall links to ${destination} with its button image`);
 
-    const img = anchor[1].match(/<img\s[^>]*>/);
-    assert.ok(img, `the button at ${destination} shows its image`);
+    const img = button.inner.match(/<img\s[^>]*>/);
     assert.match(img[0], /\swidth="88"/, `image at ${destination} is 88 wide`);
     assert.match(img[0], /\sheight="31"/, `image at ${destination} is 31 tall`);
   }
+
+  // The CC badge stays in the footer — it is not turned into a wall button.
+  const ccButton = anchors(html).find(
+    (a) => attr(a.attrs, 'href') === FOOTER_BADGE.href && /\swidth="88"/.test(a.inner)
+  );
+  assert.ok(!ccButton, 'the CC badge does not become an 88×31 wall button');
 });

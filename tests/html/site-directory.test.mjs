@@ -9,7 +9,7 @@ import { directoryEntries } from '../../src/data/site-directory.ts';
 
 // The data file is the maintainer-facing interface for the site directory:
 // expectations derive from it, so data-file edits stay data-only while the
-// rendering contract (order, labels, descriptions) stays under test.
+// rendering contract (order, URL labels, descriptions) stays under test.
 
 function escapeHtml(text) {
   return text
@@ -19,13 +19,14 @@ function escapeHtml(text) {
     .replaceAll('"', '&quot;');
 }
 
-// Find the entry's label link in the built HTML: the anchor whose visible
-// text is exactly the entry label and whose href is the entry href.
+// Find the entry's link in the built HTML: the anchor whose visible text is
+// exactly the entry's URL (the label is the URL itself) and whose href is the
+// entry href.
 function findEntryAnchor(html, entry) {
   for (const match of html.matchAll(/<a\s([^>]*)>([^<]*)<\/a>/g)) {
     const [, attrs, text] = match;
     if (
-      text.trim() === escapeHtml(entry.label) &&
+      text.trim() === escapeHtml(entry.href) &&
       attrs.includes(`href="${escapeHtml(entry.href)}"`)
     ) {
       return { index: match.index, attrs };
@@ -34,12 +35,12 @@ function findEntryAnchor(html, entry) {
   return null;
 }
 
-test('site directory renders directory entries in data-file order with labels and descriptions', async () => {
+test('site directory renders directory entries in data-file order with the URL as label and descriptions', async () => {
   const html = await loadBuiltPage('paths/index.html');
 
   const anchors = directoryEntries.map((entry) => {
     const anchor = findEntryAnchor(html, entry);
-    assert.ok(anchor, `entry "${entry.label}" should link to ${entry.href}`);
+    assert.ok(anchor, `entry ${entry.href} should show its URL as the label`);
     return anchor;
   });
 
@@ -47,7 +48,7 @@ test('site directory renders directory entries in data-file order with labels an
   for (let i = 1; i < anchors.length; i++) {
     assert.ok(
       anchors[i - 1].index < anchors[i].index,
-      `entry "${directoryEntries[i].label}" should render after "${directoryEntries[i - 1].label}"`,
+      `entry ${directoryEntries[i].href} should render after ${directoryEntries[i - 1].href}`,
     );
   }
 
@@ -60,7 +61,7 @@ test('site directory renders directory entries in data-file order with labels an
     const found = html.indexOf(escapeHtml(entry.description), anchors[i].index);
     assert.ok(
       found !== -1 && found < nextIndex,
-      `entry "${entry.label}" should show its description before the next entry`,
+      `entry ${entry.href} should show its description before the next entry`,
     );
   }
 });
@@ -70,17 +71,17 @@ test('root-relative directory entries link in the same tab; absolute-URL entries
 
   for (const entry of directoryEntries) {
     const anchor = findEntryAnchor(html, entry);
-    assert.ok(anchor, `entry "${entry.label}" should link to ${entry.href}`);
+    assert.ok(anchor, `entry ${entry.href} should show its URL as the label`);
 
     // Spec rule, applied independently of the page: root-relative paths are
     // same-tab, absolute http(s) URLs open in a new tab with safe rel.
     if (entry.href.startsWith('/')) {
       assert.ok(
         !/\btarget=/.test(anchor.attrs),
-        `entry "${entry.label}" should link in the same tab`,
+        `entry ${entry.href} should link in the same tab`,
       );
     } else {
-      assertOpensSafelyInNewTab(anchor.attrs, `entry "${entry.label}"`);
+      assertOpensSafelyInNewTab(anchor.attrs, `entry ${entry.href}`);
     }
   }
 });

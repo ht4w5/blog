@@ -29,14 +29,6 @@ export const buttons: ButtonEntry[] = [
     alt: 'ht4w5 blog button linking to this site',
     imageSrc: '/buttons/ht4w5.png',
     href: '/',
-    title: 'ht4w5 — link to me',
-  },
-  {
-    id: 'cc-by-nc-sa',
-    alt: 'CC BY-NC-SA 4.0 licence button',
-    imageSrc: '/buttons/cc-by-nc-sa.png',
-    href: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
-    title: 'Content licensed under CC BY-NC-SA 4.0',
   },
   {
     id: 'xjtumen',
