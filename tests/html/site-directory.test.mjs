@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
+import { assertOpensSafelyInNewTab } from './helpers.mjs';
 import { directoryEntries } from '../../src/data/site-directory.ts';
 
 // The data file is the maintainer-facing interface for the site directory:
@@ -79,13 +80,7 @@ test('root-relative directory entries link in the same tab; absolute-URL entries
         `entry "${entry.label}" should link in the same tab`,
       );
     } else {
-      assert.match(anchor.attrs, /\btarget="_blank"/, `entry "${entry.label}" should open in a new tab`);
-      const rel = anchor.attrs.match(/\brel="([^"]*)"/);
-      assert.ok(rel, `entry "${entry.label}" should carry safe rel attributes`);
-      assert.ok(
-        rel[1].split(/\s+/).includes('noopener') && rel[1].split(/\s+/).includes('noreferrer'),
-        `entry "${entry.label}" should carry rel="noopener noreferrer"`,
-      );
+      assertOpensSafelyInNewTab(anchor.attrs, `entry "${entry.label}"`);
     }
   }
 });

@@ -1,42 +1,25 @@
 // Built-HTML tests for the homepage link-to-me box: this site's own button
 // beside a ready-made embed snippet in the blog's code-block style, with a
-// Copy control. Assert rendered HTML a visitor receives — never CSS property
-// values, markup minutiae, or script internals. Run via `pnpm test`, which
-// builds first.
+// Copy control. Assert rendered HTML a visitor receives — visible text and
+// document order of visible content — never CSS property values, markup
+// minutiae, or script internals. Run via `pnpm test`, which builds first.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
+import { HEADING, images, codeBlocks, visibleText, decodeEntities } from './helpers.mjs';
 
 const SITE = 'https://ht4w5.github.io';
 const BUTTON_PATH = '/buttons/ht4w5.png';
-const HEADING = /<h[1-6][^>]*>buttons<\/h[1-6]>/;
+// The opening of the embed snippet, as the visitor reads it in the code
+// block: distinct from the rendered page around it.
+const SNIPPET_PREFIX = `<a href="${SITE}/"><img src="${SITE}${BUTTON_PATH}"`;
 
-function attr(tag, name) {
-  return tag.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`))?.[1] ?? null;
-}
-
-function decodeEntities(text) {
-  return text
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#34;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&');
-}
-
-/** The link-to-me box region: from its wrapper up to the wall grid. */
-function boxRegion(html) {
-  const start = html.indexOf('class="link-to-me"');
-  const wall = html.indexOf('class="button-wall"');
-  if (start === -1 || wall === -1 || start > wall) return null;
-  return html.slice(start, wall);
-}
-
-/** The snippet's code-block text, decoded from its HTML-escaped form. */
-function snippetText(region) {
-  const code = region.match(/<pre[^>]*>[\s\S]*?<code[^>]*>([\s\S]*?)<\/code>[\s\S]*?<\/pre>/);
-  return code ? decodeEntities(code[1]) : null;
+/** The rendered label and document position of every button on the page. */
+function buttonLabels(html) {
+  return [...html.matchAll(/<button[^>]*>([\s\S]*?)<\/button>/g)].map((m) => ({
+    text: decodeEntities(m[1]).trim(),
+    index: m.index,
+  }));
 }
 
 test('the link-to-me box leads the buttons section, showing this site\'s own button', async () => {
@@ -45,73 +28,81 @@ test('the link-to-me box leads the buttons section, showing this site\'s own but
   const heading = html.match(HEADING);
   assert.ok(heading, 'homepage shows a heading with the text "buttons"');
 
-  const region = boxRegion(html);
-  assert.ok(region, 'the buttons section starts with a link-to-me box before the wall grid');
-
-  const start = html.indexOf('class="link-to-me"');
-  assert.ok(
-    start > heading.index,
-    'the link-to-me box sits at the top of the buttons section'
+  // The box shows this site's own button art — 88×31 with descriptive alt
+  // text — first thing under the section heading.
+  const art = images(html).filter(
+    (img) => img.src === BUTTON_PATH || img.src === `${SITE}${BUTTON_PATH}`
   );
+  assert.ok(art.length > 0, "the page renders the site's own button art");
+  const boxArt = art[0];
+  assert.ok(boxArt.index > heading.index, 'the button art sits under the buttons heading');
+  assert.equal(boxArt.width, '88', `the button is 88 wide: ${boxArt.tag}`);
+  assert.equal(boxArt.height, '31', `the button is 31 tall: ${boxArt.tag}`);
+  const alt = boxArt.alt;
+  assert.ok(alt && alt.trim().length > 0, 'the button has descriptive alt text');
 
-  const images = region.match(/<img\s[^>]*>/g) ?? [];
-  assert.equal(images.length, 1, 'the box shows exactly one image: this site\'s own button');
+  // The snippet is shown in a code block — and shown to the visitor exactly
+  // once: the box is neither missing nor duplicated.
+  const snippet = codeBlocks(html).find((block) => block.text.includes(SNIPPET_PREFIX));
+  assert.ok(snippet, 'the code block contains the snippet');
+  const shownCount = visibleText(html).split(SNIPPET_PREFIX).length - 1;
+  assert.equal(shownCount, 1, 'the embed snippet is shown exactly once');
 
-  const img = images[0];
-  const src = attr(img, 'src');
+  const copy = buttonLabels(html).find((button) => /copy/i.test(button.text));
+  assert.ok(copy, 'the box offers a Copy control');
+
+  // Document order of visible content: the box leads the wall — its button
+  // art, then the snippet/copy text, before the first wall button's alt text.
+  assert.ok(boxArt.index < snippet.index, 'the button art appears before the snippet');
+  const firstWallImage = images(html).find((img) => img.index > copy.index);
+  assert.ok(firstWallImage, 'the wall renders buttons after the link-to-me box');
   assert.ok(
-    src === BUTTON_PATH || src === `${SITE}${BUTTON_PATH}`,
-    `the box shows the site's own button art: ${img}`
+    snippet.index < firstWallImage.index,
+    "the snippet appears before the first wall button's alt text"
   );
-  assert.equal(attr(img, 'width'), '88', `the button is 88 wide: ${img}`);
-  assert.equal(attr(img, 'height'), '31', `the button is 31 tall: ${img}`);
-  const alt = attr(img, 'alt');
-  assert.ok(alt && alt.trim().length > 0, `the button has descriptive alt text: ${img}`);
+  assert.ok(
+    copy.index < firstWallImage.index,
+    "the Copy text appears before the first wall button's alt text"
+  );
+  assert.ok(
+    firstWallImage.alt && firstWallImage.alt.trim().length > 0,
+    'the first wall button has descriptive alt text'
+  );
 
   // The box and the wall's self entry show the same button, so their alt
   // text must match.
-  const wall = html.slice(html.indexOf('class="button-wall"'));
-  const wallImg = (wall.match(/<img\s[^>]*>/g) ?? []).find(
-    (tag) => (attr(tag, 'src') ?? '').endsWith(BUTTON_PATH)
-  );
-  assert.ok(wallImg, 'the wall renders the self button');
-  assert.equal(alt, attr(wallImg, 'alt'), 'the box\'s alt text matches the self button\'s');
+  const wallArt = art.find((img) => img.index > snippet.index);
+  assert.ok(wallArt, 'the wall renders the self button');
+  assert.equal(alt, wallArt.alt, "the box's alt text matches the self button's");
 });
 
 test('the snippet is the anchor-wrapping-image HTML with absolute URLs in a code block', async () => {
   const html = await loadBuiltPage('index.html');
-  const region = boxRegion(html);
-  assert.ok(region, 'the homepage has a link-to-me box');
+  const snippet = codeBlocks(html).find((block) => block.text.includes(SNIPPET_PREFIX));
+  assert.ok(snippet, 'the snippet is rendered in a code block');
 
-  assert.ok(/<pre[\s>]/.test(region), 'the snippet is rendered in a code block');
-
-  const snippet = snippetText(region);
-  assert.ok(snippet, 'the code block contains the snippet');
-
+  const text = snippet.text;
   assert.ok(
-    snippet.includes(`<a href="${SITE}/">`),
-    `the snippet links to the site root with an absolute URL: ${snippet}`
+    text.includes(`<a href="${SITE}/">`),
+    `the snippet links to the site root with an absolute URL: ${text}`
   );
   assert.ok(
-    snippet.includes(`${SITE}${BUTTON_PATH}`),
-    `the snippet embeds the button art with an absolute URL: ${snippet}`
+    text.includes(`${SITE}${BUTTON_PATH}`),
+    `the snippet embeds the button art with an absolute URL: ${text}`
   );
   assert.ok(
-    /<a[\s\S]*<img[\s\S]*<\/a>/.test(snippet),
-    `the snippet is the anchor-wrapping-image form: ${snippet}`
+    /<a[\s\S]*<img[\s\S]*<\/a>/.test(text),
+    `the snippet is the anchor-wrapping-image form: ${text}`
   );
-  assert.match(snippet, /width="88"/, `the embedded image is 88 wide: ${snippet}`);
-  assert.match(snippet, /height="31"/, `the embedded image is 31 tall: ${snippet}`);
+  assert.match(text, /width="88"/, `the embedded image is 88 wide: ${text}`);
+  assert.match(text, /height="31"/, `the embedded image is 31 tall: ${text}`);
 });
 
 test('the link-to-me box offers a Copy control', async () => {
   const html = await loadBuiltPage('index.html');
-  const region = boxRegion(html);
-  assert.ok(region, 'the homepage has a link-to-me box');
+  const snippet = codeBlocks(html).find((block) => block.text.includes(SNIPPET_PREFIX));
+  assert.ok(snippet, 'the homepage has a link-to-me box');
 
-  const buttons = [...region.matchAll(/<button[^>]*>([\s\S]*?)<\/button>/g)];
-  assert.ok(buttons.length > 0, 'the box offers a Copy control');
-
-  const label = decodeEntities(buttons.map((m) => m[1]).join(' '));
-  assert.match(label, /copy/i, 'the Copy control is labelled for copying');
+  const copy = buttonLabels(html).find((button) => /copy/i.test(button.text));
+  assert.ok(copy, 'the box offers a Copy control labelled for copying');
 });

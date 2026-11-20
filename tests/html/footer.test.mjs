@@ -7,6 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
+import { COPYRIGHT, wallRegion, visibleText } from './helpers.mjs';
 
 // Representative pages: the homepage, the site directory, a plain page, and a
 // blog post. Every route renders the same footer.
@@ -16,8 +17,6 @@ const PAGES = [
   'about/index.html',
   'blog/hello-world/index.html',
 ];
-
-const COPYRIGHT = /© \d{4} ht4w5/;
 
 // The four destinations of the buttons migrated from the old footer. Kept as
 // literals (not read from src/data/buttons.ts) so a data regression cannot
@@ -36,16 +35,6 @@ function footerRegion(html) {
   const end = html.indexOf('</footer>', start);
   assert.ok(end !== -1, 'footer closes');
   return html.slice(start, end + '</footer>'.length);
-}
-
-/** The button wall region: from the `buttons` heading to the end of its section. */
-function wallRegion(html) {
-  const heading = html.match(/<h[1-6][^>]*>buttons<\/h[1-6]>/);
-  assert.ok(heading, 'homepage shows a heading with the text "buttons"');
-  const end = html.indexOf('</section>', heading.index);
-  return end === -1
-    ? html.slice(heading.index)
-    : html.slice(heading.index, end + '</section>'.length);
 }
 
 function escapeRegExp(text) {
@@ -70,20 +59,17 @@ for (const page of PAGES) {
     assert.ok(!/<a[\s>]/.test(footer), 'footer has no links');
 
     // Visible text is exactly the copyright line — nothing else renders.
-    const visibleText = footer
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<[^>]*>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    const copyright = visibleText.match(COPYRIGHT)?.[0];
+    const visible = visibleText(footer);
+    const copyright = visible.match(COPYRIGHT)?.[0];
     assert.ok(copyright, 'footer shows the copyright line');
-    assert.equal(visibleText, copyright, 'the copyright line is the only visible text');
+    assert.equal(visible, copyright, 'the copyright line is the only visible text');
   });
 }
 
 test('the button wall keeps every migrated destination with its 88×31 button', async () => {
   const html = await loadBuiltPage('index.html');
-  const wall = wallRegion(html);
+  const wall = wallRegion(html, { includeSectionEnd: true });
+  assert.ok(wall, 'homepage has a button wall');
 
   for (const destination of MIGRATED_DESTINATIONS) {
     const anchor = wall.match(
