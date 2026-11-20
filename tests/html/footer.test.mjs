@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
-import { COPYRIGHT, attr, visibleText } from './helpers.mjs';
+import { COPYRIGHT, anchors, attr, visibleText } from './helpers.mjs';
 
 // Representative pages: the homepage, the site directory, a plain page, and a
 // blog post. Every route renders the same footer.
@@ -31,14 +31,6 @@ function footerRegion(html) {
   const end = html.indexOf('</footer>', start);
   assert.ok(end !== -1, 'footer closes');
   return html.slice(start, end + '</footer>'.length);
-}
-
-/** Every anchor's attributes and inner content, each bounded by its own link. */
-function anchors(html) {
-  return [...html.matchAll(/<a\s([^>]*)>((?:(?!<\/a>)[\s\S])*?)<\/a>/g)].map((m) => ({
-    attrs: m[1],
-    inner: m[2],
-  }));
 }
 
 for (const page of PAGES) {

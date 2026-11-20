@@ -455,6 +455,12 @@ hr {
   color: var(--color-muted);
 }
 
+/* One entry per prose note. Spacing is in rem so the entries keep the
+   surrounding prose rhythm instead of shrinking with the section type. */
+.footnotes li {
+  margin-bottom: 1rem;
+}
+
 .footnotes a {
   color: var(--color-link);
 }
@@ -467,11 +473,6 @@ hr {
    affordance — link color plus underline, slightly apart from the text. */
 .footnotes [data-footnote-backref] {
   margin-left: 0.2em;
-  text-decoration: underline;
-}
-
-.footnotes [data-footnote-backref]:hover {
-  color: var(--color-link-hover);
   text-decoration: underline;
 }
 

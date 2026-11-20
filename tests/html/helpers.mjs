@@ -40,12 +40,26 @@ export function visibleText(html) {
     .trim();
 }
 
-/** Every anchor's destination with its document position. */
-export function links(html) {
-  return [...html.matchAll(/<a\s([^>]*)>/g)].map((m) => ({
-    href: attr(m[1], 'href'),
+/** Every anchor's attributes and inner content, each bounded by its own link. */
+export function anchors(html) {
+  return [...html.matchAll(/<a\s([^>]*)>((?:(?!<\/a>)[\s\S])*?)<\/a>/g)].map((m) => ({
+    attrs: m[1],
+    inner: m[2],
     index: m.index,
   }));
+}
+
+/** Every anchor's destination with its document position. */
+export function links(html) {
+  return anchors(html).map((a) => ({
+    href: attr(a.attrs, 'href'),
+    index: a.index,
+  }));
+}
+
+/** Every element id on the page. */
+export function ids(html) {
+  return new Set([...html.matchAll(/id="([^"]*)"/g)].map((m) => m[1]));
 }
 
 /** Every image's alt text and dimensions with its document position. */

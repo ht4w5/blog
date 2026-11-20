@@ -8,26 +8,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadBuiltPage } from './load-page.mjs';
-import { attr, visibleText } from './helpers.mjs';
+import { anchors, attr, ids, visibleText } from './helpers.mjs';
 
 const FOOTNOTE_POST = 'blog/the-right-way-to-reuse-slices-in-go/index.html';
 
-/** Every anchor's attribute string, in document order. */
-function anchorAttrs(html) {
-  return [...html.matchAll(/<a\s([^>]*)>/g)].map((m) => m[1]);
+/** The table-of-contents region of a built page, from <nav class="toc" to </nav>. */
+function tocRegion(html) {
+  const start = html.indexOf('<nav class="toc"');
+  assert.ok(start !== -1, 'the post has a table of contents');
+  const end = html.indexOf('</nav>', start);
+  assert.ok(end !== -1, 'the table of contents closes');
+  return html.slice(start, end + '</nav>'.length);
 }
 
-/** Anchors carrying the given semantics attribute, as { href, id } pairs. */
-function footnoteAnchors(html, semantics) {
-  const present = new RegExp(`(?:^|\\s)${semantics}(?:=|\\s|$)`);
-  return anchorAttrs(html)
-    .filter((attrs) => present.test(attrs))
-    .map((attrs) => ({ href: attr(attrs, 'href'), id: attr(attrs, 'id') }));
-}
-
-/** Every element id on the page. */
-function ids(html) {
-  return new Set([...html.matchAll(/id="([^"]*)"/g)].map((m) => m[1]));
+/** Anchors carrying the given data attribute, as { href, id } pairs. */
+function footnoteAnchors(html, dataAttr) {
+  const present = new RegExp(`(?:^|\\s)${dataAttr}(?:=|\\s|$)`);
+  return anchors(html)
+    .filter(({ attrs }) => present.test(attrs))
+    .map(({ attrs }) => ({ href: attr(attrs, 'href'), id: attr(attrs, 'id') }));
 }
 
 test('every footnote reference points at its footnote definition', async () => {
@@ -66,9 +65,7 @@ test('every Backref returns to its footnote reference', async () => {
 
 test('the table of contents has no "Footnotes" entry', async () => {
   const html = await loadBuiltPage(FOOTNOTE_POST);
-  const tocStart = html.indexOf('<nav class="toc"');
-  assert.ok(tocStart !== -1, 'the post has a table of contents');
-  const toc = html.slice(tocStart, html.indexOf('</nav>', tocStart));
+  const toc = tocRegion(html);
 
   assert.ok(!toc.includes('footnote-label'), 'the TOC does not link to the footnote heading');
   assert.ok(!visibleText(toc).includes('Footnotes'), 'the TOC shows no "Footnotes" entry');
@@ -76,9 +73,7 @@ test('the table of contents has no "Footnotes" entry', async () => {
 
 test('a post without footnotes keeps its table of contents entries', async () => {
   const html = await loadBuiltPage('blog/hello-world/index.html');
-  const tocStart = html.indexOf('<nav class="toc"');
-  assert.ok(tocStart !== -1, 'the post has a table of contents');
-  const toc = html.slice(tocStart, html.indexOf('</nav>', tocStart));
+  const toc = tocRegion(html);
 
   // Kept as literals so a regression cannot quietly drop normal headings.
   for (const [slug, text] of [
