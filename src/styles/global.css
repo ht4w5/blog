@@ -701,3 +701,60 @@ hr {
   cursor: default;
 }
 /* ===== End button wall ===== */
+
+/* ===== Link-to-me box (homepage button wall) ===== */
+.link-to-me {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* This site's own button beside the snippet — same crisp 88×31 rendering
+   as the wall. */
+.link-to-me-art {
+  width: 88px;
+  height: 31px;
+  display: block;
+  flex-shrink: 0;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+.link-to-me-snippet {
+  flex: 1 1 24rem;
+  min-width: 0;
+}
+
+/* The snippet reuses the blog's plain pre/code code-block style. */
+.link-to-me-snippet pre {
+  margin: 0;
+}
+
+/* Copy control — matches the theme-toggle bracket style. No display rule,
+   so the hidden attribute can hide it without JavaScript. */
+.link-to-me-copy {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  padding: 0;
+  margin-top: 0.5rem;
+  line-height: 1;
+}
+
+.link-to-me-copy::before {
+  content: "[";
+}
+
+.link-to-me-copy::after {
+  content: "]";
+}
+
+.link-to-me-copy:hover {
+  color: var(--color-link);
+}
+/* ===== End link-to-me box ===== */
