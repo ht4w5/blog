@@ -159,6 +159,22 @@ hr {
   margin: 2em 0;
 }
 
+/* Visually hidden but still announced to screen readers (standard clip
+   pattern). Anything inside — e.g. the footnote heading's autolink anchor —
+   is hidden with it. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Layout */
 .container {
   max-width: var(--max-width);
@@ -427,6 +443,36 @@ hr {
 .post-content h2 {
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0.25em;
+}
+
+/* Footnotes (GFM) — separated from the prose, smaller and muted, with
+   dark-mode colors via the same CSS variables as everything else. */
+.footnotes {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.875em;
+  color: var(--color-muted);
+}
+
+.footnotes a {
+  color: var(--color-link);
+}
+
+.footnotes a:hover {
+  color: var(--color-link-hover);
+}
+
+/* The Backref (↩) is a control, not prose: keep it a clear clickable
+   affordance — link color plus underline, slightly apart from the text. */
+.footnotes [data-footnote-backref] {
+  margin-left: 0.2em;
+  text-decoration: underline;
+}
+
+.footnotes [data-footnote-backref]:hover {
+  color: var(--color-link-hover);
+  text-decoration: underline;
 }
 
 /* Pagination */

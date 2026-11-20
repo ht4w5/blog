@@ -11,7 +11,9 @@ interface Props {
 
 const { headings } = Astro.props;
 const tocHeadings = headings
-  .filter((h) => h.depth >= 2 && h.depth <= 3)
+  // `footnote-label` is the generated "Footnotes" heading (screen-reader
+  // only); it must not appear in the table of contents.
+  .filter((h) => h.depth >= 2 && h.depth <= 3 && h.slug !== 'footnote-label')
   .map((h) => ({ ...h, text: h.text.replace(/\s*#$/, '') }));
 ---
 
