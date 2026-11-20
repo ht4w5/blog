@@ -64,6 +64,32 @@ test('site directory renders directory entries in data-file order with labels an
   }
 });
 
+test('root-relative directory entries link in the same tab; absolute-URL entries open in a new tab safely', async () => {
+  const html = await loadBuiltPage('paths/index.html');
+
+  for (const entry of directoryEntries) {
+    const anchor = findEntryAnchor(html, entry);
+    assert.ok(anchor, `entry "${entry.label}" should link to ${entry.href}`);
+
+    // Spec rule, applied independently of the page: root-relative paths are
+    // same-tab, absolute http(s) URLs open in a new tab with safe rel.
+    if (entry.href.startsWith('/')) {
+      assert.ok(
+        !/\btarget=/.test(anchor.attrs),
+        `entry "${entry.label}" should link in the same tab`,
+      );
+    } else {
+      assert.match(anchor.attrs, /\btarget="_blank"/, `entry "${entry.label}" should open in a new tab`);
+      const rel = anchor.attrs.match(/\brel="([^"]*)"/);
+      assert.ok(rel, `entry "${entry.label}" should carry safe rel attributes`);
+      assert.ok(
+        rel[1].split(/\s+/).includes('noopener') && rel[1].split(/\s+/).includes('noreferrer'),
+        `entry "${entry.label}" should carry rel="noopener noreferrer"`,
+      );
+    }
+  }
+});
+
 test('header nav shows [paths] linking to the site directory on representative pages', async () => {
   const pages = ['index.html', 'about/index.html', 'blog/hello-world/index.html'];
 
