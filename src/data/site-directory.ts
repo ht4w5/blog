@@ -14,7 +14,7 @@ export interface DirectoryEntry {
 
 /**
  * The site directory's directory entries. The order of this array is the
- * display order on the /paths page — adding or reordering entries is a
+ * display order in the site directory — adding or reordering entries is a
  * data-file edit only.
  */
 export const directoryEntries = [
