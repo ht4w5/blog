@@ -4,10 +4,7 @@
 // badge (decorative — no link, no click affordance). Plain <img> tags keep
 // animated GIF art animating natively, with no framework image optimization.
 import { buttons } from '../data/buttons';
-
-function isExternal(href: string): boolean {
-  return /^https?:\/\//.test(href);
-}
+import { externalLinkAttrs } from '../utils/links';
 ---
 
 <ul class="button-wall">
@@ -19,7 +16,7 @@ function isExternal(href: string): boolean {
             class="button"
             href={entry.href}
             title={entry.title}
-            {...(isExternal(entry.href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            {...externalLinkAttrs(entry.href)}
           >
             <img src={entry.imageSrc} alt={entry.alt} width="88" height="31" loading="lazy" />
           </a>

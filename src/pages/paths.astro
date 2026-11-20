@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { directoryEntries, type DirectoryEntry } from '../data/site-directory';
+import { directoryEntries } from '../data/site-directory';
+import { externalLinkAttrs } from '../utils/links';
 
-// Absolute-URL (http/https) directory entries open in a new tab; root-relative
-// ones stay in the same tab.
-const isAbsoluteHref = (href: DirectoryEntry['href']): boolean => /^https?:\/\//.test(href);
+// Destinations follow the shared external-link policy (src/utils/links.ts):
+// absolute URLs open in a new tab, root-relative ones stay in the same tab.
 ---
 
 <BaseLayout title="Site directory" description="Every destination published under this domain.">
@@ -21,11 +21,7 @@ const isAbsoluteHref = (href: DirectoryEntry['href']): boolean => /^https?:\/\//
       directoryEntries.map((entry) => (
         <li class="post-item">
           <h2>
-            <a
-              href={entry.href}
-              target={isAbsoluteHref(entry.href) ? '_blank' : undefined}
-              rel={isAbsoluteHref(entry.href) ? 'noopener noreferrer' : undefined}
-            >{entry.label}</a>
+            <a href={entry.href} {...externalLinkAttrs(entry.href)}>{entry.label}</a>
           </h2>
           {entry.description && <p class="post-excerpt">{entry.description}</p>}
         </li>
