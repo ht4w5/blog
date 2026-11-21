@@ -12,9 +12,9 @@ import { anchors, attr, ids, visibleText } from './helpers.mjs';
 
 const FOOTNOTE_POST = 'blog/pooling-slices-in-go-without-extra-allocations/index.html';
 
-/** The table-of-contents region of a built page, from <nav class="toc" to </nav>. */
+/** The first table-of-contents region of a built page, from <nav class="toc… to </nav>. */
 function tocRegion(html) {
-  const start = html.indexOf('<nav class="toc"');
+  const start = html.indexOf('<nav class="toc');
   assert.ok(start !== -1, 'the post has a table of contents');
   const end = html.indexOf('</nav>', start);
   assert.ok(end !== -1, 'the table of contents closes');

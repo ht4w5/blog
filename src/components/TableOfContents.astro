@@ -7,9 +7,10 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  variant: 'rail' | 'inline';
 }
 
-const { headings } = Astro.props;
+const { headings, variant } = Astro.props;
 const tocHeadings = headings
   // `footnote-label` is the generated "Footnotes" heading (screen-reader
   // only); it must not appear in the table of contents.
@@ -18,11 +19,12 @@ const tocHeadings = headings
 ---
 
 {tocHeadings.length > 0 && (
-  <nav class="toc" aria-label="Table of contents">
-    {/* Native disclosure: the Contents label collapses/expands the list with
-        click, tap, or keyboard, with or without script. Rendered open — the
-        outline shows by default. */}
-    <details open>
+  <nav class={`toc toc--${variant}`} aria-label="Table of contents">
+    {/* Native disclosure: click, tap, or Enter/Space on the Contents label
+        collapses/expands the list, with or without script. The rail copy
+        renders open (the outline shows by default); the inline copy renders
+        collapsed (one tap reveals the outline). */}
+    <details open={variant === 'rail'}>
       <summary class="toc-title">Contents</summary>
       <ol class="toc-list">
         {tocHeadings.map((heading) => (
