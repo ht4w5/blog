@@ -3,8 +3,9 @@
 :root {
   --color-bg: #fafafa;
   --color-text: #1a1a1a;
-  --color-accent: #3366aa;
-  --color-accent-hover: #224488;
+  /* Fixed accent hue (teal); lightness varies per theme to hold WCAG AA contrast on each background. */
+  --color-accent: #1f8079;
+  --color-accent-hover: #175f5a;
   --color-code-bg: #f0f0f0;
   --color-border: #ddd;
   --color-muted: #666;
@@ -18,8 +19,8 @@
   :root:not([data-theme="light"]) {
     --color-bg: #1a1a1a;
     --color-text: #e0e0e0;
-    --color-accent: #6eaaff;
-    --color-accent-hover: #8ec0ff;
+    --color-accent: #2aa198;
+    --color-accent-hover: #35b8ad;
     --color-code-bg: #2a2a2a;
     --color-border: #444;
     --color-muted: #999;
@@ -29,8 +30,8 @@
 :root[data-theme="dark"] {
   --color-bg: #1a1a1a;
   --color-text: #e0e0e0;
-  --color-accent: #6eaaff;
-  --color-accent-hover: #8ec0ff;
+  --color-accent: #2aa198;
+  --color-accent-hover: #35b8ad;
   --color-code-bg: #2a2a2a;
   --color-border: #444;
   --color-muted: #999;
