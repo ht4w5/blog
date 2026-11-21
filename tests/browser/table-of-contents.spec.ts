@@ -1,19 +1,16 @@
-// Table-of-contents behaviour (mobile-nav-toc tickets 02–03): the Contents
-// label is a real disclosure — clicking, tapping, or pressing Enter/Space on it
-// collapses and re-expands the list — the entry for the section being read
-// carries aria-current as the reader scrolls or jumps, and each breakpoint
-// shows its own copy of the table of contents: the collapsed inline copy under
-// the post header at phone width, the expanded sticky rail at desktop width.
-// Assert only what a visitor observes: visible entries, disclosure state,
-// navigation destinations, on-screen arrangement (bounding boxes), and
-// accessibility state exposed to assistive tech — never CSS property values,
-// markup minutiae, or script internals.
+// Table-of-contents behaviour (nav-posts-search ticket 02): the outline is
+// readable and never folded. The Contents label is a plain static heading,
+// the entries are always visible on load in both placements — the sticky
+// right rail at desktop width and the copy above the article at phone width —
+// and the entry for the section being read carries aria-current as the reader
+// scrolls or jumps. Assert only what a visitor observes: visible entries,
+// disclosure-free labels, navigation destinations, on-screen arrangement
+// (bounding boxes), and accessibility state exposed to assistive tech — never
+// CSS property values, markup minutiae, or script internals.
 //
 // Every test operates on the table-of-contents instances a visitor can see,
 // so the suite keeps covering the component wherever its copies are placed.
-// The summary is located by its visible "Contents" label: like the search
-// results dropdown (see search-click.spec.ts), it exposes no ARIA role that
-// role selectors match.
+// The label is located by its visible "Contents" text.
 import { test, expect, type Page, type Locator } from '@playwright/test';
 import { box, isBelow, isWithin } from './helpers';
 
@@ -22,10 +19,24 @@ const POST_URL = '/blog/pooling-slices-in-go-without-extra-allocations';
 const DESKTOP = { width: 1280, height: 800 };
 const PHONE = { width: 375, height: 812 };
 
+const ENTRY_NAMES = [
+  'Interface assignment allocation',
+  'The better approach',
+  'A common pattern',
+  'See also',
+];
+
 const tocs = (page: Page) => page.getByRole('navigation', { name: 'Table of contents' });
-const contentsLabel = (toc: Locator) => toc.getByText('Contents', { exact: true });
+const contentsLabel = (toc: Locator) => toc.getByRole('heading', { name: 'Contents', exact: true });
 const entries = (toc: Locator) => toc.getByRole('list');
 const entry = (toc: Locator, name: string) => toc.getByRole('link', { name, exact: true });
+
+// The sizes a reader gets are what this seam can pin: line boxes. At the
+// component's line spacing (1.8), 14px entry text measures ≈ 25.2px per line
+// and the 16px label ≈ 28.8px — the old 12px/12.8px sizes measured ≈ 21.6px
+// and ≈ 23.0px. The mono face and the bold weight are paint attributes with
+// no geometry of their own at this seam.
+const ENTRY_LINE = 14 * 1.8;
 
 // Scroll the reader to a section: the heading lands at the top of the
 // viewport, as after a table-of-contents jump.
@@ -50,36 +61,37 @@ async function visibleTocs(page: Page): Promise<Locator[]> {
 test.describe('at desktop width', () => {
   test.use({ viewport: DESKTOP });
 
-  test('the table of contents loads expanded and the Contents label collapses and re-expands the list', async ({
+  test('the Contents label is plain static text and the entries are always visible', async ({
     page,
   }) => {
     await page.goto(POST_URL);
     for (const toc of await visibleTocs(page)) {
       await expect(entries(toc)).toBeVisible();
-      await contentsLabel(toc).click();
-      await expect(entries(toc)).toBeHidden();
-      await contentsLabel(toc).click();
-      await expect(entries(toc)).toBeVisible();
-    }
-  });
+      await expect(entry(toc, 'The better approach')).toBeVisible();
 
-  test('the disclosure is operable with Enter and Space', async ({ page }) => {
-    await page.goto(POST_URL);
-    for (const toc of await visibleTocs(page)) {
-      await expect(entries(toc)).toBeVisible();
-      await contentsLabel(toc).focus();
+      // The label is a plain static heading — exposed to assistive tech as a
+      // heading, not as any kind of control.
+      await expect(contentsLabel(toc)).toBeVisible();
+
+      // Not interactive: clicking the label, and pressing Enter and Space as
+      // if it were a control, leave the entries exactly as they were. (A
+      // pointer cursor and a disclosure marker are paint details with no
+      // geometry at this seam.)
+      await contentsLabel(toc).click();
       await page.keyboard.press('Enter');
-      await expect(entries(toc)).toBeHidden();
       await page.keyboard.press('Space');
       await expect(entries(toc)).toBeVisible();
+      await expect(entry(toc, 'The better approach')).toBeVisible();
     }
   });
 
-  test('the table of contents is the right-side rail, expanded by default', async ({ page }) => {
+  test('the table of contents is the right-side rail with entries visible on load', async ({
+    page,
+  }) => {
     await page.goto(POST_URL);
     const toc = (await visibleTocs(page))[0];
 
-    // Expanded without any interaction.
+    // Visible without any interaction.
     await expect(entries(toc)).toBeVisible();
 
     // Beside the article on its right — not above the content.
@@ -129,22 +141,6 @@ test.describe('at desktop width', () => {
       await expect(entry(toc, 'See also')).toHaveAttribute('aria-current', 'true');
       expect(isWithin(await box(entry(toc, 'See also')), await box(toc))).toBe(true);
     });
-
-    test('opening a collapsed rail brings the current entry into view', async ({ page }) => {
-      await page.goto(POST_URL);
-      const toc = (await visibleTocs(page))[0];
-      await contentsLabel(toc).click();
-      await expect(entries(toc)).toBeHidden();
-
-      // Reading on while the rail is collapsed moves the current entry …
-      await scrollToHeading(page, 'see-also');
-
-      // … and opening the rail marks it and brings it into view.
-      await contentsLabel(toc).click();
-      await expect(entries(toc)).toBeVisible();
-      await expect(entry(toc, 'See also')).toHaveAttribute('aria-current', 'true');
-      expect(isWithin(await box(entry(toc, 'See also')), await box(toc))).toBe(true);
-    });
   });
 });
 
@@ -173,22 +169,30 @@ test.describe('on a phone viewport', () => {
     expect(isBelow(bodyBox, tocBox)).toBe(true);
   });
 
-  test('the table of contents loads collapsed; one tap expands it and a second tap collapses it', async ({
+  test('the table of contents above the article shows its entries fully expanded on load', async ({
     page,
   }) => {
     await page.goto(POST_URL);
     const toc = (await visibleTocs(page))[0];
-    await expect(entries(toc)).toBeHidden();
+
+    // Nothing to tap open: the label and every entry are visible the moment
+    // the page loads.
+    await expect(contentsLabel(toc)).toBeVisible();
+    for (const name of ENTRY_NAMES) {
+      await expect(entry(toc, name)).toBeVisible();
+    }
+
+    // Tapping the label does not fold the list away.
     await contentsLabel(toc).tap();
     await expect(entries(toc)).toBeVisible();
-    await contentsLabel(toc).tap();
-    await expect(entries(toc)).toBeHidden();
+    for (const name of ENTRY_NAMES) {
+      await expect(entry(toc, name)).toBeVisible();
+    }
   });
 
   test('tapping an entry jumps to its section and marks it as current in the visible copy', async ({ page }) => {
     await page.goto(POST_URL);
     const toc = (await visibleTocs(page))[0];
-    await contentsLabel(toc).tap();
     await entry(toc, 'The better approach').tap();
     await expect(page).toHaveURL(/#the-better-approach$/);
     await expect(page.getByRole('heading', { name: 'The better approach' })).toBeInViewport();
@@ -197,17 +201,47 @@ test.describe('on a phone viewport', () => {
   });
 });
 
+test.describe('text sizing', () => {
+  test.use({ viewport: DESKTOP });
+
+  test('the entries render at 14px mono and the Contents label at 16px bold', async ({ page }) => {
+    await page.goto(POST_URL);
+    for (const viewport of [DESKTOP, PHONE]) {
+      await page.setViewportSize(viewport);
+      for (const toc of await visibleTocs(page)) {
+        // The 16px label's line box measures ≈ 28.8px (the old 12.8px label
+        // ≈ 23.0px).
+        const labelBox = await box(contentsLabel(toc));
+        expect(labelBox.height).toBeGreaterThan(27);
+        expect(labelBox.height).toBeLessThan(30.5);
+
+        // Each entry line box measures ≈ 25.2px (the old 12px entries
+        // ≈ 21.6px). An entry that wraps onto a second line in the rail
+        // occupies a whole multiple of a line box.
+        for (const item of await toc.getByRole('listitem').all()) {
+          const height = (await box(item)).height;
+          const lines = Math.round(height / ENTRY_LINE);
+          expect(lines).toBeGreaterThanOrEqual(1);
+          expect(Math.abs(height - lines * ENTRY_LINE)).toBeLessThan(1);
+        }
+      }
+    }
+  });
+});
+
 test.describe('without JavaScript', () => {
   test.use({ viewport: PHONE, javaScriptEnabled: false });
 
-  test('the disclosure and its entries are present and usable', async ({ page }) => {
+  test('the entries are visible and usable without script', async ({ page }) => {
     await page.goto(POST_URL);
     const toc = (await visibleTocs(page))[0];
+
+    // Nothing to tap open: the label and the entries arrive expanded with or
+    // without script…
     await expect(contentsLabel(toc)).toBeVisible();
-    await expect(entries(toc)).toBeHidden();
-    // The native disclosure opens without script…
-    await contentsLabel(toc).click();
     await expect(entries(toc)).toBeVisible();
+    await expect(entry(toc, 'The better approach')).toBeVisible();
+
     // …and the entries still take the reader to their sections.
     await entry(toc, 'The better approach').click();
     await expect(page).toHaveURL(/#the-better-approach$/);
@@ -260,40 +294,29 @@ test.describe('current-section tracking', () => {
 test.describe('with the table of contents rendered twice on a page', () => {
   test.use({ viewport: DESKTOP });
 
-  test('each copy keeps its own disclosure state and tracks the current section', async ({ page }) => {
+  test('each copy stays expanded and tracks the current section as the reader moves between viewports', async ({
+    page,
+  }) => {
     // The site renders two copies of the component — rail and inline — but a
-    // visitor sees one per viewport. Their independence is what a visitor
-    // observes across a viewport change: each copy keeps its own state.
+    // visitor sees one per viewport. Both are always expanded; what a visitor
+    // observes across a viewport change is that whichever copy is showing
+    // knows the section being read.
     await page.goto(POST_URL);
 
-    // The rail copy at desktop width loads expanded; collapse it.
-    const rail = (await visibleTocs(page))[0];
-    await contentsLabel(rail).click();
-    await expect(entries(rail)).toBeHidden();
-
-    // The inline copy at phone width is its own disclosure: still collapsed
-    // by default, and expandable without touching the rail copy's state.
+    // Reading at phone width: the inline copy shows the section.
     await page.setViewportSize(PHONE);
-    const inline = (await visibleTocs(page))[0];
-    await expect(entries(inline)).toBeHidden();
-    await contentsLabel(inline).click();
-    await expect(entries(inline)).toBeVisible();
-
-    // Back at desktop width the rail copy kept its own state — still
-    // collapsed — and the inline copy keeps its own: expanded at phone width.
-    await page.setViewportSize(DESKTOP);
-    await expect(entries(rail)).toBeHidden();
-    await page.setViewportSize(PHONE);
-    await expect(entries(inline)).toBeVisible();
-
-    // Each copy marks the section being read, wherever the reader looks.
     await scrollToHeading(page, 'a-common-pattern');
+    const inline = (await visibleTocs(page))[0];
+    await expect(entries(inline)).toBeVisible();
     await expect(entry(inline, 'A common pattern')).toHaveAttribute('aria-current', 'true');
     await expect(entry(inline, 'See also')).not.toHaveAttribute('aria-current', 'true');
+
+    // At desktop width the rail copy tracks it too — with no state to restore
+    // and nothing to reopen.
     await page.setViewportSize(DESKTOP);
     // The reflow moved the headings, so put the reader back at the section.
     await scrollToHeading(page, 'a-common-pattern');
-    await contentsLabel(rail).click();
+    const rail = (await visibleTocs(page))[0];
     await expect(entries(rail)).toBeVisible();
     await expect(entry(rail, 'A common pattern')).toHaveAttribute('aria-current', 'true');
     await expect(entry(rail, 'See also')).not.toHaveAttribute('aria-current', 'true');
