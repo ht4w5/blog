@@ -48,4 +48,10 @@ export const buttons: ButtonEntry[] = [
     imageSrc: '/buttons/github.png',
     href: 'https://github.com/ht4w5',
   },
+  {
+    id: 'huizm',
+    alt: 'huizm\'s homepage',
+    imageSrc: '/buttons/huizm.png',
+    href: 'https://huizm.cn',
+  }
 ];
