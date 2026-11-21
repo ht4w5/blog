@@ -31,6 +31,12 @@ export const buttons: ButtonEntry[] = [
     href: 'https://ht4w5.github.io',
   },
   {
+    id: 'rss',
+    alt: 'Rich Site Summary',
+    imageSrc: '/buttons/rss.png',
+    href: 'https://ht4w5.github.io/feed.xml'
+  },
+  {
     id: 'cc-by-nc-sa',
     alt: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International',
     imageSrc: '/buttons/cc-by-nc-sa.png',
@@ -42,10 +48,4 @@ export const buttons: ButtonEntry[] = [
     imageSrc: '/buttons/github.png',
     href: 'https://github.com/ht4w5',
   },
-  {
-    id: 'rss',
-    alt: 'Rich Site Summary',
-    imageSrc: '/buttons/rss.png',
-    href: 'https://ht4w5.github.io/feed.xml'
-  }
 ];
