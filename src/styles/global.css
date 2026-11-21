@@ -442,6 +442,30 @@ hr {
   font-size: 0.95rem;
 }
 
+/* Posts page filter — a fixed page control: mono like the nav search it
+   replaces, but no expand-on-focus (it already spans the content width).
+   Rendered hidden and revealed by its script so the no-JS page is a plain
+   list; the muted empty-result line follows the same contract. */
+.posts-filter {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.posts-filter:focus {
+  border-color: var(--color-accent);
+}
+
+.no-posts-match {
+  color: var(--color-muted);
+}
+
 /* Tags */
 .tag-pills {
   display: inline-flex;
