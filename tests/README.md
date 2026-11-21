@@ -50,6 +50,18 @@ await expect(page.getByRole('link', { name: 'ht4w5', exact: true })).toBeVisible
 
 Prefer role-based locators (`getByRole`, `getByLabel`, …) over CSS selectors.
 
+### Fixture builds and the shared static server
+
+Some behaviour only shows on a build with more posts than the live content
+set holds (the homepage's 10-cap, the removed `/page/N` route). The browser
+seam covers it with a fixture build: `tests/browser/fixture-site.ts`
+generates fixture posts with known titles, dates, and tags into the content
+collection, builds the site with them to `dist-fixture/` (`ASTRO_OUT_DIR` in
+`astro.config.mjs`), serves that output via `tests/static-server.ts`, and
+removes the fixture posts again when the run ends — even on failure. The
+same static server (clean URLs, `404.html` fallback like astro preview)
+serves the standard `dist/` for built-HTML page-request tests.
+
 ## What to assert
 
 External behaviour only: rendered HTML, visible text and titles, link
@@ -147,3 +159,9 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | nav-posts-search ticket 02 checklist item 4; user story 6 |
 | `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | nav-posts-search ticket 02 checklist item 4; user story 6 |
 | `table-of-contents.spec.ts` — each copy stays expanded and tracks the current section as the reader moves between viewports | nav-posts-search ticket 02 checklist items 2, 4; user stories 2, 6 |
+| `homepage-recent.spec.ts` — the homepage lists at most the 10 most recent posts, newest first | nav-posts-search ticket 03 checklist item 1 |
+| `homepage-recent.spec.ts` — the [all posts] link follows the post list and opens the complete list | nav-posts-search ticket 03 checklist item 2 |
+| `homepage-fixtures.spec.ts` — the homepage shows exactly the 10 most recent posts, newest first | nav-posts-search ticket 03 checklist item 1 |
+| `homepage-fixtures.spec.ts` — a request for a page-2 URL returns the site 404 page | nav-posts-search ticket 03 checklist item 3 |
+| `homepage-fixtures.spec.ts` — the [all posts] link opens the complete list, including the capped posts | nav-posts-search ticket 03 checklist items 1–2 |
+| `homepage-fixtures.spec.ts` — tag pages still paginate: a tag with more than 20 posts keeps its page 2 | nav-posts-search ticket 03 checklist item 4 |
