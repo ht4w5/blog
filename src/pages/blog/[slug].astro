@@ -44,6 +44,12 @@ function formatDate(dateString: string): string {
         )}
       </header>
 
+      {/* The table of contents renders twice — inline here, rail after the
+          article — each shown at its breakpoint and display-none otherwise:
+          DOM order equals visual order, it works without JavaScript, and no
+          node-moving or resize handling exists to break. */}
+      <TableOfContents headings={headings} variant="inline" />
+
       <div class="post-content">
         <Content />
       </div>
@@ -56,6 +62,6 @@ function formatDate(dateString: string): string {
       </nav>
     </article>
 
-    <TableOfContents headings={headings} />
+    <TableOfContents headings={headings} variant="rail" />
   </div>
 </BaseLayout>
