@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { generateExcerpt } from '../utils/excerpt';
+import { tagHue } from '../utils/tag-color';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<BaseLayout title="Posts" description="All posts">
+  <h1>Posts</h1>
+
+  {/* Ships hidden: the filtering script below reveals it as its first act,
+      so a visitor without JavaScript gets the plain complete list and no dead
+      filter control. The bar is the nav links' plain-text-with-brackets
+      style: literal brackets around a plain input. */}
+  <span class="posts-filter-bar" hidden><span>[</span><input
+    type="text"
+    class="posts-filter"
+    placeholder="filter posts"
+    aria-label="Filter posts"
+  /><span>]</span></span>
+
+  {/* Pre-rendered empty-result line, hidden by default: the filtering script
+      shows it in place of the list when nothing matches. */}
+  <p class="no-posts-match" hidden>no posts match</p>
+
+  <ul class="post-list">
+    {posts.map((post) => {
+      const excerpt = generateExcerpt(post.data.description, post.body);
+      return (
+        <li class="post-item" data-post-slug={post.id}>
+          <h2><a href={`/blog/${post.id}`}>{post.data.title}</a></h2>
+          <time class="post-date" datetime={post.data.date}>
+            {post.data.date}
+          </time>
+          {post.data.tags.length > 0 && (
+            <div class="tag-pills">
+              {post.data.tags.map((tag) => (
+                <a href={`/tags/${tag}`} class="tag-pill" style={`--hue: ${tagHue(tag)}`}>{tag}</a>
+              ))}
+            </div>
+          )}
+          {excerpt && <p class="post-excerpt">{excerpt}</p>}
+        </li>
+      );
+    })}
+  </ul>
+</BaseLayout>
+
+<script>
+  // The posts-page filter (nav-posts-search ticket 01). Reveal the input
+  // first — before any network work — so it appears as soon as scripting
+  // runs; the page stays a plain complete list without JavaScript. Matching
+  // reuses the old nav search's contract exactly: /search-index.json plus
+  // fuse.js over title, tags, and excerpt at threshold 0.3, so behaviour
+  // cannot drift from what the nav search did. Filtering is instant on
+  // input with no submit, no result cap, and no URL state.
+  import type Fuse from 'fuse.js';
+
+  interface SearchItem {
+    slug: string;
+    title: string;
+    tags: string[];
+    excerpt: string;
+    date: string;
+  }
+
+  const filterBar = document.querySelector<HTMLElement>('.posts-filter-bar');
+  filterBar?.removeAttribute('hidden');
+
+  const filterInput = document.querySelector<HTMLInputElement>('.posts-filter');
+
+  // The bar hugs its text: the closing bracket sits against the placeholder
+  // when the input is empty and extends along with what the reader types. A
+  // hidden mirror of the bar's own font measures the text; the bar only
+  // exists with script, so script-sizing it is safe.
+  const measure = document.createElement('span');
+  measure.setAttribute('aria-hidden', 'true');
+  measure.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+  filterBar?.append(measure);
+
+  function sizeInput(): void {
+    if (!filterInput) return;
+    measure.textContent = filterInput.value || filterInput.placeholder;
+    filterInput.style.width = `${Math.ceil(measure.getBoundingClientRect().width) + 2}px`;
+  }
+  sizeInput();
+  // Webfonts: the first measurement can fall back to other metrics, so
+  // re-measure once the real font is in.
+  void document.fonts?.ready.then(sizeInput);
+
+  const postList = document.querySelector<HTMLElement>('.post-list');
+  const noMatch = document.querySelector<HTMLElement>('.no-posts-match');
+
+  // Post identity comes from the entry's data-post-slug attribute, not from
+  // the shape of its link.
+  const items = [...document.querySelectorAll<HTMLLIElement>('.post-item')].map((el) => ({
+    el,
+    slug: el.dataset.postSlug ?? '',
+  }));
+
+  const fuseReady: Promise<Fuse<SearchItem>> = (async () => {
+    const response = await fetch('/search-index.json');
+    const data: unknown = await response.json();
+    if (!Array.isArray(data)) throw new Error('Unexpected search index shape');
+    // Dynamically import Fuse.js, as the nav search did, to keep the bundle lean.
+    const FuseCtor = (await import('fuse.js')).default;
+    return new FuseCtor(data as SearchItem[], {
+      keys: ['title', 'tags', 'excerpt'],
+      threshold: 0.3,
+    });
+  })();
+
+  function showAll(): void {
+    for (const { el } of items) el.removeAttribute('hidden');
+    postList?.removeAttribute('hidden');
+    noMatch?.setAttribute('hidden', '');
+  }
+
+  function applyFilter(matches: Set<string>): void {
+    // The empty-result line keys off the visible rendered entries, not the
+    // match set: an index-only match (an entry the index knows but this list
+    // never rendered) must not leave a blank list with no explanation.
+    let visibleCount = 0;
+    for (const { el, slug } of items) {
+      const show = matches.has(slug);
+      el.toggleAttribute('hidden', !show);
+      if (show) visibleCount++;
+    }
+    if (visibleCount === 0) {
+      // The list is replaced by the muted empty-result line.
+      postList?.setAttribute('hidden', '');
+      noMatch?.removeAttribute('hidden');
+      return;
+    }
+    postList?.removeAttribute('hidden');
+    noMatch?.setAttribute('hidden', '');
+  }
+
+  filterInput?.addEventListener('input', () => {
+    sizeInput();
+    const query = filterInput.value.trim();
+    if (!query) {
+      showAll();
+      return;
+    }
+    void fuseReady
+      .then((fuse) => {
+        // Drop stale work: a newer input event owns the list now.
+        if (filterInput.value.trim() !== query) return;
+        applyFilter(new Set(fuse.search(query).map(({ item }) => item.slug)));
+      })
+      .catch((e) => {
+        console.error('Failed to load search index:', e);
+      });
+  });
+</script>

@@ -50,6 +50,18 @@ await expect(page.getByRole('link', { name: 'ht4w5', exact: true })).toBeVisible
 
 Prefer role-based locators (`getByRole`, `getByLabel`, …) over CSS selectors.
 
+### Fixture builds and the shared static server
+
+Some behaviour only shows on a build with more posts than the live content
+set holds (the homepage's 10-cap, the removed `/page/N` route). The browser
+seam covers it with a fixture build: `tests/browser/fixture-site.ts`
+generates fixture posts with known titles, dates, and tags into the content
+collection, builds the site with them to `dist-fixture/` (`ASTRO_OUT_DIR` in
+`astro.config.mjs`), serves that output via `tests/static-server.ts`, and
+removes the fixture posts again when the run ends — even on failure. The
+same static server (clean URLs, `404.html` fallback like astro preview)
+serves the standard `dist/` for built-HTML page-request tests.
+
 ## What to assert
 
 External behaviour only: rendered HTML, visible text and titles, link
@@ -90,34 +102,66 @@ Rows for the site-directory-button-wall spec:
 | Test | Covers |
 | --- | --- |
 | `homepage.spec.ts` — homepage shows the site title and its first post can be opened | ticket 01 (the browser seam itself) |
-| `search-click.spec.ts` — a press-and-release on the left half of a result row opens the post | ticket 02 checklist items 1–2; user stories 28–29 |
-| `search-click.spec.ts` — a press-and-release on the right half of a result row opens the post | ticket 02 checklist item 3 |
-| `search-click.spec.ts` — results open on focus and input, close on outside click, and match as before | ticket 02 checklist item 4; user story 31 |
-| `search-click.spec.ts` — tapping a result row opens the post | user story 30 |
 
 Rows for the mobile-nav-toc spec (the Covers column names the spec slug to
 keep the ticket numbers unambiguous):
 
 | Test | Covers |
 | --- | --- |
-| `site-nav.spec.ts` — the site nav stacks into three rows at every phone width: title + toggle, links, full-width search | mobile-nav-toc ticket 01 checklist item 1 |
-| `site-nav.spec.ts` — every nav link stays fully visible at narrow widths | mobile-nav-toc ticket 01 checklist item 2 |
-| `site-nav.spec.ts` — the nav links wrap onto multiple rows when one line cannot fit | mobile-nav-toc ticket 01 checklist item 2 |
-| `site-nav.spec.ts` — the theme toggle cycles themes from its first-row spot and the state persists | mobile-nav-toc ticket 01 checklist item 3 |
-| `site-nav.spec.ts` — search works from the full-width row and results sit directly under it | mobile-nav-toc ticket 01 checklist item 4 |
-| `site-nav.spec.ts` — the site nav stays on one line, arranged title → links → search → toggle | mobile-nav-toc ticket 01 checklist item 5 |
-| `table-of-contents.spec.ts` — the table of contents loads expanded and the Contents label collapses and re-expands the list | mobile-nav-toc ticket 02 checklist items 1–2; user stories 12, 14, 17 |
-| `table-of-contents.spec.ts` — the disclosure is operable with Enter and Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
-| `table-of-contents.spec.ts` — the table of contents is the right-side rail, expanded by default | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail with entries visible on load | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
 | `table-of-contents.spec.ts` — the table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
 | `table-of-contents.spec.ts` — the active entry is scrolled into view in the rail while reading on | mobile-nav-toc ticket 02 checklist item 5; user story 15 |
-| `table-of-contents.spec.ts` — opening a collapsed rail brings the current entry into view | mobile-nav-toc ticket 02 checklist items 1, 5 |
 | `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | mobile-nav-toc ticket 03 checklist item 1; user story 10 |
-| `table-of-contents.spec.ts` — the table of contents loads collapsed; one tap expands it and a second tap collapses it | mobile-nav-toc ticket 03 checklist item 2; user stories 11, 12, 14 |
 | `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | mobile-nav-toc ticket 03 checklist item 3; user stories 13, 20 |
-| `table-of-contents.spec.ts` — the disclosure and its entries are present and usable | mobile-nav-toc ticket 03 checklist item 4; user story 21 |
 | `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | mobile-nav-toc ticket 03 checklist item 5; user story 19 |
 | `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
 | `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
-| `table-of-contents.spec.ts` — each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
 | `layout-stability.spec.ts` — the page loads without content shifting under the reader | mobile-nav-toc user story 23 |
+
+The disclosure-pinning table-of-contents tests (folding the list, toggling via
+Enter/Space, re-opening a collapsed rail, per-copy disclosure state) were
+deleted when nav-posts-search ticket 02 removed the disclosure; their
+replacements are listed below.
+
+Rows for the nav-posts-search spec (the Covers column names the spec slug to
+keep the ticket numbers unambiguous). Table-of-contents tests kept from the
+mobile-nav-toc spec are listed again with their nav-posts-search coverage:
+
+| Test | Covers |
+| --- | --- |
+| `posts-page.spec.ts` — the posts page shows the Posts heading and the complete post list newest first | nav-posts-search ticket 01 checklist item 1 |
+| `posts-page.spec.ts` — the filter bar spans the content width beneath the heading as bracketed plain text, and the input carries the placeholder and an accessible label | nav-posts-search ticket 01 checklist items 1, 5 |
+| `posts-page.spec.ts` — the closing bracket hugs the control's text — collapsed at the placeholder, extending with what the reader types | post-review maintainer feedback (filter bar bracket placement) |
+| `posts-page.spec.ts` — typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post | nav-posts-search ticket 01 checklist item 2 |
+| `posts-page.spec.ts` — every match stays visible — the filter has no result cap | nav-posts-search ticket 01 checklist item 3 |
+| `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |
+| `posts-page.spec.ts` — when the search index and the rendered list disagree, an empty list still shows the no posts match line | nav-posts-search ticket 01 checklist item 4 |
+| `posts-page.spec.ts` — the filter has no URL state: navigating away or reloading clears it | nav-posts-search ticket 01 checklist item 6 |
+| `posts-page.spec.ts` — the complete post list is present and no filter input is visible | nav-posts-search ticket 01 checklist item 7 |
+| `table-of-contents.spec.ts` — the Contents label is plain static text and the entries are always visible | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 5 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail with entries visible on load | nav-posts-search ticket 02 checklist item 6; user story 4 |
+| `table-of-contents.spec.ts` — the table of contents stays the sticky right rail beside the article | nav-posts-search ticket 02 checklist item 6; user story 4 |
+| `table-of-contents.spec.ts` — the active entry is scrolled into view in the rail while reading on | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | nav-posts-search ticket 02 checklist item 2; user story 3 |
+| `table-of-contents.spec.ts` — the table of contents above the article shows its entries fully expanded on load | nav-posts-search ticket 02 checklist item 2; user stories 2, 3 |
+| `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the entry and label line boxes are consistent with 14px and 16px text at the component's 1.8 line spacing | nav-posts-search ticket 02 checklist item 1; user story 1 |
+| `table-of-contents.spec.ts` — the entries are visible and usable without script | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 3 |
+| `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | nav-posts-search ticket 02 checklist item 5; user story 27 |
+| `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — each copy stays expanded and tracks the current section as the reader moves between viewports | nav-posts-search ticket 02 checklist items 2, 4; user stories 2, 6 |
+| `homepage-recent.spec.ts` — the homepage lists at most the 10 most recent posts, newest first | nav-posts-search ticket 03 checklist item 1 |
+| `homepage-recent.spec.ts` — the [all posts] link follows the post list and opens the complete list | nav-posts-search ticket 03 checklist item 2 |
+| `homepage-fixtures.spec.ts` — the homepage shows exactly the 10 most recent posts, newest first | nav-posts-search ticket 03 checklist item 1 |
+| `homepage-fixtures.spec.ts` — a request for a page-2 URL returns the site 404 page | nav-posts-search ticket 03 checklist item 3 |
+| `homepage-fixtures.spec.ts` — the [all posts] link opens the complete list, including the capped posts | nav-posts-search ticket 03 checklist items 1–2 |
+| `homepage-fixtures.spec.ts` — tag pages still paginate: a tag with more than 20 posts keeps its page 2 | nav-posts-search ticket 03 checklist item 4 |
+| `site-nav.spec.ts` — the bracket links are home, posts, about, tags, dirs, feed, then the theme toggle | nav-posts-search ticket 04 checklist item 1 |
+| `site-nav.spec.ts` — the theme toggle label mirrors the mode through the cycle and the state persists | nav-posts-search ticket 04 checklist item 2 |
+| `site-nav.spec.ts` — the theme toggle sits level with the bracket links | post-review maintainer feedback (toggle alignment) |
+| `site-nav.spec.ts` — the site nav stays on one line on desktop: site title left, bracket group right | nav-posts-search ticket 04 checklist item 3 |
+| `site-nav.spec.ts` — the site nav stacks into two rows at every phone width: site title, then the bracket links | nav-posts-search ticket 04 checklist item 4 |
+| `site-nav.spec.ts` — the bracket nav links wrap rather than overflow on the narrowest phones | nav-posts-search ticket 04 checklist item 4 |
+| `site-nav.spec.ts` — no search input or results dropdown is present in the nav at any viewport | nav-posts-search ticket 04 checklist item 5 |
+| `site-nav.spec.ts` — the nav links and theme toggle are reachable in reading order and operable with the keyboard | nav-posts-search user story 26 |
