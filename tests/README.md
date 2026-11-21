@@ -131,6 +131,7 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | --- | --- |
 | `posts-page.spec.ts` — the posts page shows the Posts heading and the complete post list newest first | nav-posts-search ticket 01 checklist item 1 |
 | `posts-page.spec.ts` — the filter bar spans the content width beneath the heading as bracketed plain text, and the input carries the placeholder and an accessible label | nav-posts-search ticket 01 checklist items 1, 5 |
+| `posts-page.spec.ts` — the closing bracket hugs the control's text — collapsed at the placeholder, extending with what the reader types | post-review maintainer feedback (filter bar bracket placement) |
 | `posts-page.spec.ts` — typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post | nav-posts-search ticket 01 checklist item 2 |
 | `posts-page.spec.ts` — every match stays visible — the filter has no result cap | nav-posts-search ticket 01 checklist item 3 |
 | `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |

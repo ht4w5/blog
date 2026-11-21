@@ -16,12 +16,12 @@ const posts = (await getCollection('blog'))
       so a visitor without JavaScript gets the plain complete list and no dead
       filter control. The bar is the nav links' plain-text-with-brackets
       style: literal brackets around a plain input. */}
-  <span class="posts-filter-bar" hidden>[<input
+  <span class="posts-filter-bar" hidden><span>[</span><input
     type="text"
     class="posts-filter"
     placeholder="filter posts"
     aria-label="Filter posts"
-  />]</span>
+  /><span>]</span></span>
 
   {/* Pre-rendered empty-result line, hidden by default: the filtering script
       shows it in place of the list when nothing matches. */}
@@ -73,6 +73,25 @@ const posts = (await getCollection('blog'))
 
   const filterInput = document.querySelector<HTMLInputElement>('.posts-filter');
 
+  // The bar hugs its text: the closing bracket sits against the placeholder
+  // when the input is empty and extends along with what the reader types. A
+  // hidden mirror of the bar's own font measures the text; the bar only
+  // exists with script, so script-sizing it is safe.
+  const measure = document.createElement('span');
+  measure.setAttribute('aria-hidden', 'true');
+  measure.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+  filterBar?.append(measure);
+
+  function sizeInput(): void {
+    if (!filterInput) return;
+    measure.textContent = filterInput.value || filterInput.placeholder;
+    filterInput.style.width = `${Math.ceil(measure.getBoundingClientRect().width) + 2}px`;
+  }
+  sizeInput();
+  // Webfonts: the first measurement can fall back to other metrics, so
+  // re-measure once the real font is in.
+  void document.fonts?.ready.then(sizeInput);
+
   const postList = document.querySelector<HTMLElement>('.post-list');
   const noMatch = document.querySelector<HTMLElement>('.no-posts-match');
 
@@ -122,6 +141,7 @@ const posts = (await getCollection('blog'))
   }
 
   filterInput?.addEventListener('input', () => {
+    sizeInput();
     const query = filterInput.value.trim();
     if (!query) {
       showAll();

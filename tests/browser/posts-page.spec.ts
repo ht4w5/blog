@@ -65,6 +65,38 @@ test('the filter bar spans the content width beneath the heading as bracketed pl
   }
 });
 
+test('the closing bracket hugs the control\'s text — collapsed at the placeholder, extending with what the reader types', async ({
+  page,
+}) => {
+  await page.goto('/posts');
+
+  const input = filter(page);
+  const bar = filterBar(page);
+  const closeBracket = bar.getByText(']', { exact: true });
+
+  // Empty: the bar collapses against its placeholder — the input is a text
+  // line, not the full bar, with the closing bracket right at its end.
+  const barBox = await box(bar);
+  const emptyBox = await box(input);
+  expect(emptyBox.width).toBeLessThan(barBox.width - 20);
+  let bracketBox = await box(closeBracket);
+  expect(Math.abs(bracketBox.x - (emptyBox.x + emptyBox.width))).toBeLessThanOrEqual(4);
+
+  // Typing extends the bar with the typed text …
+  await input.fill('pooling slices in go without extra allocations');
+  const grownBox = await box(input);
+  expect(grownBox.width).toBeGreaterThan(emptyBox.width);
+  bracketBox = await box(closeBracket);
+  expect(Math.abs(bracketBox.x - (grownBox.x + grownBox.width))).toBeLessThanOrEqual(4);
+
+  // … and emptying it collapses it back onto the placeholder.
+  await input.fill('');
+  const collapsedBox = await box(input);
+  expect(Math.abs(collapsedBox.width - emptyBox.width)).toBeLessThanOrEqual(2);
+  bracketBox = await box(closeBracket);
+  expect(Math.abs(bracketBox.x - (collapsedBox.x + collapsedBox.width))).toBeLessThanOrEqual(4);
+});
+
 test('typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post', async ({
   page,
 }) => {

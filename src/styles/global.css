@@ -354,19 +354,23 @@ hr {
   display: none;
 }
 
-/* Like a hovered nav link, the whole bracket bar answers the caret. */
+/* Like a hovered nav link, the whole bracket bar answers the caret — and it
+   is the focus indication: the input's default ring reads as a floating box
+   around plain text and is removed below. */
 .posts-filter-bar:focus-within {
   color: var(--color-accent);
 }
 
 .posts-filter {
-  flex: 1;
+  /* Sized to its text by the page's script (placeholder width when empty). */
   min-width: 0;
+  max-width: 100%;
   font: inherit;
   color: inherit;
   background: none;
   border: none;
   padding: 0;
+  outline: none;
 }
 
 .posts-filter::placeholder {
