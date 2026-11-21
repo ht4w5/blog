@@ -705,7 +705,7 @@ hr {
 /* Table of Contents */
 .toc {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   line-height: 1.8;
 }
 
@@ -720,34 +720,26 @@ hr {
   overflow-y: auto;
 }
 
-/* Inline variant: the collapsed disclosure under the post header, shown at
-   and below the post-layout breakpoint. Whichever variant is off-breakpoint
-   is display-none, so exactly one table of contents is exposed at a time. */
+/* Inline variant: the copy under the post header, shown at and below the
+   post-layout breakpoint. Whichever variant is off-breakpoint is display-none,
+   so exactly one table of contents is exposed at a time. */
 .toc--inline {
   display: none;
   width: 100%;
   margin-bottom: 1.5rem;
 }
 
+/* The label is a plain static heading — it never toggles anything. It keeps
+   the component's mono face and line spacing (the generic heading rule would
+   give it the body face and tighter leading); only its size grows to body
+   size (16px), and it stays bold. */
 .toc-title {
-  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
   font-weight: 700;
+  line-height: 1.8;
   color: var(--color-text);
-  cursor: pointer;
-  user-select: none;
-  /* The label is the disclosure toggle; hide the default marker so it keeps
-     its plain-text look. Chromium honours `list-style: none` here; Safari
-     still draws a triangle unless `::marker` and `::-webkit-details-marker`
-     are silenced too. */
-  list-style: none;
-}
-
-.toc-title::marker {
-  content: '';
-}
-
-.toc-title::-webkit-details-marker {
-  display: none;
+  margin: 0;
 }
 
 .toc-list {
