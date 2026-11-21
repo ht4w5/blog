@@ -47,10 +47,6 @@
   color: var(--color-muted);
   padding: 0;
   line-height: 1;
-  /* Direct child of the nav container (the mobile grid places it on row one);
-     the negative margin keeps the 1rem gap to the search bracket that living
-     in .search-wrapper used to give it. */
-  margin-inline-start: -0.5rem;
 }
 
 .theme-toggle::before {
@@ -237,163 +233,37 @@ hr {
   color: var(--color-accent);
 }
 
-/* Search — bracket style matching nav links */
-.search-wrapper {
-  position: relative;
-  margin-left: auto;
-  align-self: center;
+/* The bracket bar: the nav links and the theme toggle (the final bracket
+   item) as one group, wrappable so nothing overflows on the narrowest
+   phones. The desktop right-alignment used to ride on the search widget's
+   `margin-left: auto`; with the widget gone the group anchors itself. */
+.nav-group {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
-.search-bracket {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--color-muted);
-}
-
-.search-bracket::before {
-  content: "[";
-}
-
-.search-bracket::after {
-  content: "]";
-}
-
-.search-input {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  border: none;
-  background: none;
-  color: var(--color-text);
-  width: 6ch;
-  padding: 0;
-  outline: none;
-  transition: width 0.15s;
-}
-
-.search-input:focus {
-  width: 180px;
-  color: var(--color-accent);
-}
-
-.search-bracket:focus-within {
-  color: var(--color-accent);
-}
-
-.search-results {
-  position: absolute;
-  top: 100%;
-  /* Fixed width anchored to the right edge: the input's width transition
-     shrinks its right-anchored container from the left, and the dropdown must
-     not slide out from under a click that is in flight. */
-  right: 0;
-  width: 320px;
-  max-width: calc(100vw - 2rem);
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 100;
-  display: none;
-}
-
-.search-results.active {
-  display: block;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  padding: 0.5rem 0.6rem;
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
-}
-
-.search-result-item:last-child {
-  border-bottom: none;
-}
-
-.search-result-item:hover {
-  background: var(--color-code-bg);
-}
-
-.search-result-item .result-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.search-result-item .result-date {
-  font-size: 0.8rem;
-  color: var(--color-muted);
-  font-family: var(--font-mono);
-  white-space: nowrap;
-}
-
-.search-no-results {
-  padding: 0.5rem 0.6rem;
-  color: var(--color-muted);
-  font-style: italic;
-}
-
-/* Phone widths: the site nav reflows into deliberate rows — title + theme
-   toggle, nav links, full-width search. Distinct from the 900px post-layout
-   breakpoint on purpose: each layout follows its own failure point. */
+/* Phone widths: the site nav reflows into two deliberate rows — the site
+   title, then the bracket links and theme toggle. Distinct from the 900px
+   post-layout breakpoint on purpose: each layout follows its own failure
+   point. */
 @media (max-width: 480px) {
   .site-nav .container {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "title toggle"
-      "links links"
-      "search search";
+      "title"
+      "links";
   }
 
   .site-title {
     grid-area: title;
   }
 
-  .theme-toggle {
-    grid-area: toggle;
-    margin-inline-start: 0;
-  }
-
-  .nav-links {
+  .nav-group {
     grid-area: links;
-  }
-
-  .search-wrapper {
-    grid-area: search;
-    margin-left: 0;
-  }
-
-  .search-bracket {
-    display: flex;
-    align-items: center;
-    flex: 1;
-  }
-
-  /* The field fills the row at rest and on focus — the desktop expand-on-focus
-     width is moot here. */
-  .search-input {
-    flex: 1;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .search-input:focus {
-    width: 100%;
-  }
-
-  /* Match the full-width field above it. */
-  .search-results {
-    width: 100%;
   }
 }
 

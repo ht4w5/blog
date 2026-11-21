@@ -34,7 +34,7 @@ The single brand color used for links and interactive affordances.
 _Avoid_: link color, brand color, theme color
 
 **Site nav**:
-The persistent top bar of every page, containing the site title, the bracket nav links, search, and the theme toggle.
+The persistent top bar of every page, containing the site title and the bracket bar of nav links — [home], [posts], [about], [tags], [dirs], [feed] — with the theme toggle as the final bracket item.
 _Avoid_: header, navbar, menu
 
 **Table of contents**:
