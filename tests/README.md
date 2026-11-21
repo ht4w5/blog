@@ -96,24 +96,24 @@ keep the ticket numbers unambiguous):
 
 | Test | Covers |
 | --- | --- |
-| `table-of-contents.spec.ts` — the table of contents loads expanded and the Contents label collapses and re-expands the list | mobile-nav-toc ticket 02 checklist items 1–2; user stories 12, 14, 17 |
-| `table-of-contents.spec.ts` — the disclosure is operable with Enter and Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
-| `table-of-contents.spec.ts` — the table of contents is the right-side rail, expanded by default | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail with entries visible on load | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
 | `table-of-contents.spec.ts` — the table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
 | `table-of-contents.spec.ts` — the active entry is scrolled into view in the rail while reading on | mobile-nav-toc ticket 02 checklist item 5; user story 15 |
-| `table-of-contents.spec.ts` — opening a collapsed rail brings the current entry into view | mobile-nav-toc ticket 02 checklist items 1, 5 |
 | `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | mobile-nav-toc ticket 03 checklist item 1; user story 10 |
-| `table-of-contents.spec.ts` — the table of contents loads collapsed; one tap expands it and a second tap collapses it | mobile-nav-toc ticket 03 checklist item 2; user stories 11, 12, 14 |
 | `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | mobile-nav-toc ticket 03 checklist item 3; user stories 13, 20 |
-| `table-of-contents.spec.ts` — the disclosure and its entries are present and usable | mobile-nav-toc ticket 03 checklist item 4; user story 21 |
 | `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | mobile-nav-toc ticket 03 checklist item 5; user story 19 |
 | `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
 | `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
-| `table-of-contents.spec.ts` — each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
 | `layout-stability.spec.ts` — the page loads without content shifting under the reader | mobile-nav-toc user story 23 |
 
+The disclosure-pinning table-of-contents tests (folding the list, toggling via
+Enter/Space, re-opening a collapsed rail, per-copy disclosure state) were
+deleted when nav-posts-search ticket 02 removed the disclosure; their
+replacements are listed below.
+
 Rows for the nav-posts-search spec (the Covers column names the spec slug to
-keep the ticket numbers unambiguous):
+keep the ticket numbers unambiguous). Table-of-contents tests kept from the
+mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 
 | Test | Covers |
 | --- | --- |
@@ -124,6 +124,19 @@ keep the ticket numbers unambiguous):
 | `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |
 | `posts-page.spec.ts` — the filter has no URL state: navigating away or reloading clears it | nav-posts-search ticket 01 checklist item 6 |
 | `posts-page.spec.ts` — the complete post list is present and no filter input is visible | nav-posts-search ticket 01 checklist item 7 |
+| `table-of-contents.spec.ts` — the Contents label is plain static text and the entries are always visible | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 5 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail with entries visible on load | nav-posts-search ticket 02 checklist item 6; user story 4 |
+| `table-of-contents.spec.ts` — the table of contents stays the sticky right rail beside the article | nav-posts-search ticket 02 checklist item 6; user story 4 |
+| `table-of-contents.spec.ts` — the active entry is scrolled into view in the rail while reading on | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | nav-posts-search ticket 02 checklist item 2; user story 3 |
+| `table-of-contents.spec.ts` — the table of contents above the article shows its entries fully expanded on load | nav-posts-search ticket 02 checklist item 2; user stories 2, 3 |
+| `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the entries render at 14px mono and the Contents label at 16px bold | nav-posts-search ticket 02 checklist item 1; user story 1 |
+| `table-of-contents.spec.ts` — the entries are visible and usable without script | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 3 |
+| `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | nav-posts-search ticket 02 checklist item 5; user story 27 |
+| `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | nav-posts-search ticket 02 checklist item 4; user story 6 |
+| `table-of-contents.spec.ts` — each copy stays expanded and tracks the current section as the reader moves between viewports | nav-posts-search ticket 02 checklist items 2, 4; user stories 2, 6 |
 | `site-nav.spec.ts` — the bracket links are home, posts, about, tags, dirs, feed, then the theme toggle | nav-posts-search ticket 04 checklist item 1 |
 | `site-nav.spec.ts` — the theme toggle label mirrors the mode through the cycle and the state persists | nav-posts-search ticket 04 checklist item 2 |
 | `site-nav.spec.ts` — the site nav stays on one line on desktop: site title left, bracket group right | nav-posts-search ticket 04 checklist item 3 |
