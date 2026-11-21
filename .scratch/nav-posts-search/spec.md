@@ -242,3 +242,10 @@
 - Visible strings this spec introduces: page heading `Posts`, placeholder
   `filter posts`, empty-result line `no posts match`, homepage link `[all posts]`,
   and the toggle mode labels `[system]`/`[dark]`/`[light]`.
+
+## Comments
+
+- Implementation complete on `integration/nav-posts-search` (tickets 01–04 resolved; code-review fix pass `b1844d1`, merged `019eaae`). `pnpm test` is green except the pre-existing accepted red in `tests/html/footer.test.mjs` (CC badge — maintainer decision in `.scratch/teal-accent/spec.md`).
+- Flagged, pre-existing and out of scope: when a tag holds >20 posts, `src/pages/tags/[tag].astro`'s `getStaticPaths` collides on the first-page route, so `/tags/<tag>` renders page-2 content — surfaced by ticket 03's fixture tests; worth a follow-up ticket.
+- Judgement call flagged: the code-review fix pass also truthed-up CONTEXT.md's stale feature bullets (inline search, 20-post pagination), beyond the spec's glossary-only docs decision.
+- The suite is Chromium-only as before: the toggle's bracket glyphs are CSS pseudo-elements and are not asserted by tests; a one-time manual Safari look at the nav bracket rendering is cheap and worth doing (as with the previous effort's summary-marker check).
