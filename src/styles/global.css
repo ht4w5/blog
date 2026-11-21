@@ -704,15 +704,29 @@ hr {
 
 /* Table of Contents */
 .toc {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+
+/* Rail variant: the sticky 200px right rail, shown above the post-layout
+   breakpoint. */
+.toc--rail {
   position: sticky;
   top: 2rem;
   width: 200px;
   flex-shrink: 0;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.8;
+}
+
+/* Inline variant: the collapsed disclosure under the post header, shown at
+   and below the post-layout breakpoint. Whichever variant is off-breakpoint
+   is display-none, so exactly one table of contents is exposed at a time. */
+.toc--inline {
+  display: none;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .toc-title {
@@ -758,10 +772,13 @@ hr {
     flex-direction: column;
   }
 
-  .toc {
-    position: static;
-    width: 100%;
-    max-height: none;
+  /* Each breakpoint shows its variant of the table of contents. */
+  .toc--rail {
+    display: none;
+  }
+
+  .toc--inline {
+    display: block;
   }
 }
 

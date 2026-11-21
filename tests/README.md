@@ -102,8 +102,14 @@ ticket numbers unambiguous):
 
 | Test | Covers |
 | --- | --- |
-| `table-of-contents.spec.ts` — the Contents label collapses and re-expands the outline (click at desktop, tap on a phone) | mobile-nav-toc ticket 02 checklist item 1; user stories 12, 14 |
+| `table-of-contents.spec.ts` — the Contents label collapses and re-expands the outline (click at desktop; tapping is covered by the phone test below) | mobile-nav-toc ticket 02 checklist item 1; user stories 12, 14 |
 | `table-of-contents.spec.ts` — the disclosure loads expanded and is operable with Enter/Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
 | `table-of-contents.spec.ts` — the entry for the section being read carries `aria-current`, updating on scroll and after jumps | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
-| `table-of-contents.spec.ts` — with the component used twice on a page, each instance toggles and tracks independently | mobile-nav-toc ticket 02 checklist item 4 |
+| `table-of-contents.spec.ts` — with the component rendered twice on a page, each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
 | `table-of-contents.spec.ts` — the desktop table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
+| `table-of-contents.spec.ts` — at phone width the table of contents sits directly under the post title/date/tags and above the article body | mobile-nav-toc ticket 03 checklist item 1; user story 10 |
+| `table-of-contents.spec.ts` — the table of contents loads collapsed at phone width; one tap expands it and a second tap collapses it | mobile-nav-toc ticket 03 checklist item 2; user stories 11, 12, 14 |
+| `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | mobile-nav-toc ticket 03 checklist item 3; user stories 13, 20 |
+| `table-of-contents.spec.ts` — with JavaScript disabled, the disclosure and its entries are present and usable | mobile-nav-toc ticket 03 checklist item 4; user story 21 |
+| `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | mobile-nav-toc ticket 03 checklist item 5; user story 19 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail, expanded by default (desktop guard) | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
