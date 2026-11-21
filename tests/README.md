@@ -121,3 +121,16 @@ keep the ticket numbers unambiguous):
 | `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
 | `table-of-contents.spec.ts` — each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
 | `layout-stability.spec.ts` — the page loads without content shifting under the reader | mobile-nav-toc user story 23 |
+
+Rows for the nav-posts-search spec (the Covers column names the spec slug to
+keep the ticket numbers unambiguous):
+
+| Test | Covers |
+| --- | --- |
+| `posts-page.spec.ts` — the posts page shows the Posts heading and the complete post list newest first | nav-posts-search ticket 01 checklist item 1 |
+| `posts-page.spec.ts` — the filter input spans the content width beneath the heading and carries the placeholder and an accessible label | nav-posts-search ticket 01 checklist items 1, 5 |
+| `posts-page.spec.ts` — typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post | nav-posts-search ticket 01 checklist item 2 |
+| `posts-page.spec.ts` — every match stays visible — the filter has no result cap | nav-posts-search ticket 01 checklist item 3 |
+| `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |
+| `posts-page.spec.ts` — the filter has no URL state: navigating away or reloading clears it | nav-posts-search ticket 01 checklist item 6 |
+| `posts-page.spec.ts` — the complete post list is present and no filter input is visible | nav-posts-search ticket 01 checklist item 7 |
