@@ -1,10 +1,11 @@
-// Table-of-contents behaviour (nav-posts-search ticket 02): the outline is
-// readable and never folded. The Contents label is a plain static heading,
-// the entries are always visible on load in both placements — the sticky
-// right rail at desktop width and the copy above the article at phone width —
-// and the entry for the section being read carries aria-current as the reader
-// scrolls or jumps. Assert only what a visitor observes: visible entries,
-// disclosure-free labels, navigation destinations, on-screen arrangement
+// Table-of-contents behaviour (nav-posts-search ticket 02): the table of
+// contents is readable and never folded. The Contents label is a plain
+// static heading, the entries are always visible on load in both placements
+// — the sticky right rail at desktop width and the copy above the article at
+// phone width — and the entry for the section being read carries
+// aria-current as the reader scrolls or jumps. Assert only what a visitor
+// observes: visible entries, disclosure-free labels, navigation destinations,
+// on-screen arrangement
 // (bounding boxes), and accessibility state exposed to assistive tech — never
 // CSS property values, markup minutiae, or script internals.
 //
@@ -12,12 +13,9 @@
 // so the suite keeps covering the component wherever its copies are placed.
 // The label is located by its visible "Contents" text.
 import { test, expect, type Page, type Locator } from '@playwright/test';
-import { box, isBelow, isWithin } from './helpers';
+import { box, isBelow, isWithin, DESKTOP, PHONE } from './helpers';
 
 const POST_URL = '/blog/pooling-slices-in-go-without-extra-allocations';
-
-const DESKTOP = { width: 1280, height: 800 };
-const PHONE = { width: 375, height: 812 };
 
 const ENTRY_NAMES = [
   'Interface assignment allocation',
@@ -31,11 +29,12 @@ const contentsLabel = (toc: Locator) => toc.getByRole('heading', { name: 'Conten
 const entries = (toc: Locator) => toc.getByRole('list');
 const entry = (toc: Locator, name: string) => toc.getByRole('link', { name, exact: true });
 
-// The sizes a reader gets are what this seam can pin: line boxes. At the
-// component's line spacing (1.8), 14px entry text measures ≈ 25.2px per line
-// and the 16px label ≈ 28.8px — the old 12px/12.8px sizes measured ≈ 21.6px
-// and ≈ 23.0px. The mono face and the bold weight are paint attributes with
-// no geometry of their own at this seam.
+// This seam observes line-box geometry only, so the sizing claims here are
+// line boxes: at the component's line spacing (1.8), entry text of 14px
+// measures ≈ 25.2px per line and label text of 16px ≈ 28.8px — the old
+// 12px/12.8px sizes measured ≈ 21.6px and ≈ 23.0px. The mono face and the
+// bold weight are paint attributes with no geometry of their own at this
+// seam, so nothing here claims them.
 const ENTRY_LINE = 14 * 1.8;
 
 // Scroll the reader to a section: the heading lands at the top of the
@@ -204,20 +203,24 @@ test.describe('on a phone viewport', () => {
 test.describe('text sizing', () => {
   test.use({ viewport: DESKTOP });
 
-  test('the entries render at 14px mono and the Contents label at 16px bold', async ({ page }) => {
+  test('the entry and label line boxes are consistent with 14px and 16px text at the component\'s 1.8 line spacing', async ({
+    page,
+  }) => {
     await page.goto(POST_URL);
     for (const viewport of [DESKTOP, PHONE]) {
       await page.setViewportSize(viewport);
       for (const toc of await visibleTocs(page)) {
-        // The 16px label's line box measures ≈ 28.8px (the old 12.8px label
+        // The label's line box measures ≈ 28.8px — consistent with 16px
+        // text at the 1.8 line spacing (the old 12.8px size measured
         // ≈ 23.0px).
         const labelBox = await box(contentsLabel(toc));
         expect(labelBox.height).toBeGreaterThan(27);
         expect(labelBox.height).toBeLessThan(30.5);
 
-        // Each entry line box measures ≈ 25.2px (the old 12px entries
-        // ≈ 21.6px). An entry that wraps onto a second line in the rail
-        // occupies a whole multiple of a line box.
+        // Each entry line box measures ≈ 25.2px — consistent with 14px text
+        // at the 1.8 line spacing (the old 12px size measured ≈ 21.6px). An
+        // entry that wraps onto a second line in the rail occupies a whole
+        // multiple of a line box.
         for (const item of await toc.getByRole('listitem').all()) {
           const height = (await box(item)).height;
           const lines = Math.round(height / ENTRY_LINE);

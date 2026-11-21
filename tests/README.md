@@ -134,6 +134,7 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | `posts-page.spec.ts` — typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post | nav-posts-search ticket 01 checklist item 2 |
 | `posts-page.spec.ts` — every match stays visible — the filter has no result cap | nav-posts-search ticket 01 checklist item 3 |
 | `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |
+| `posts-page.spec.ts` — when the search index and the rendered list disagree, an empty list still shows the no posts match line | nav-posts-search ticket 01 checklist item 4 |
 | `posts-page.spec.ts` — the filter has no URL state: navigating away or reloading clears it | nav-posts-search ticket 01 checklist item 6 |
 | `posts-page.spec.ts` — the complete post list is present and no filter input is visible | nav-posts-search ticket 01 checklist item 7 |
 | `table-of-contents.spec.ts` — the Contents label is plain static text and the entries are always visible | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 5 |
@@ -143,7 +144,7 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | nav-posts-search ticket 02 checklist item 2; user story 3 |
 | `table-of-contents.spec.ts` — the table of contents above the article shows its entries fully expanded on load | nav-posts-search ticket 02 checklist item 2; user stories 2, 3 |
 | `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | nav-posts-search ticket 02 checklist item 4; user story 6 |
-| `table-of-contents.spec.ts` — the entries render at 14px mono and the Contents label at 16px bold | nav-posts-search ticket 02 checklist item 1; user story 1 |
+| `table-of-contents.spec.ts` — the entry and label line boxes are consistent with 14px and 16px text at the component's 1.8 line spacing | nav-posts-search ticket 02 checklist item 1; user story 1 |
 | `table-of-contents.spec.ts` — the entries are visible and usable without script | nav-posts-search ticket 02 checklist items 2–3; user stories 2, 3 |
 | `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | nav-posts-search ticket 02 checklist item 5; user story 27 |
 | `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | nav-posts-search ticket 02 checklist item 4; user story 6 |
@@ -161,3 +162,4 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | `site-nav.spec.ts` — the site nav stacks into two rows at every phone width: site title, then the bracket links | nav-posts-search ticket 04 checklist item 4 |
 | `site-nav.spec.ts` — the bracket nav links wrap rather than overflow on the narrowest phones | nav-posts-search ticket 04 checklist item 4 |
 | `site-nav.spec.ts` — no search input or results dropdown is present in the nav at any viewport | nav-posts-search ticket 04 checklist item 5 |
+| `site-nav.spec.ts` — the nav links and theme toggle are reachable in reading order and operable with the keyboard | nav-posts-search user story 26 |

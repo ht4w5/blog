@@ -7,7 +7,7 @@
 // arrangement (bounding boxes), tap outcomes, and accessibility state — never
 // CSS values, markup minutiae, or script internals.
 import { test, expect, type Page } from '@playwright/test';
-import { box, boxes, isBelow, overlapsVertically, LAYOUT_SLACK } from './helpers';
+import { box, boxes, isBelow, overlapsVertically, LAYOUT_SLACK, DESKTOP } from './helpers';
 
 const NAV_LINKS = [
   { name: '[home]', href: '/' },
@@ -30,7 +30,7 @@ const navParts = (page: Page) => ({
 test('the bracket links are home, posts, about, tags, dirs, feed, then the theme toggle', async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setViewportSize(DESKTOP);
   await page.goto('/');
   const { title, links, toggle } = navParts(page);
 
@@ -151,8 +151,8 @@ test('the bracket nav links wrap rather than overflow on the narrowest phones', 
 test('the site nav stays on one line on desktop: site title left, bracket group right', async ({
   page,
 }) => {
-  const width = 1280;
-  await page.setViewportSize({ width, height: 800 });
+  const width = DESKTOP.width;
+  await page.setViewportSize(DESKTOP);
   await page.goto('/');
   const { title, links, toggle } = navParts(page);
   const titleBox = await box(title);
@@ -170,4 +170,48 @@ test('the site nav stays on one line on desktop: site title left, bracket group 
   expect(
     Math.abs(width - (toggleBox.x + toggleBox.width) - titleBox.x)
   ).toBeLessThanOrEqual(LAYOUT_SLACK);
+});
+
+test('the nav links and theme toggle are reachable in reading order and operable with the keyboard', async ({
+  page,
+}) => {
+  await page.setViewportSize(DESKTOP);
+  await page.goto('/');
+
+  // Reading order: tabbing reaches the site title, then each bracket link in
+  // order, then the theme toggle.
+  const inReadingOrder = [
+    page.getByRole('link', { name: 'ht4w5', exact: true }),
+    ...NAV_LINKS.map(({ name }) => page.getByRole('link', { name, exact: true })),
+    page.getByRole('button', { name: /theme/i }),
+  ];
+  for (const part of inReadingOrder) {
+    await page.keyboard.press('Tab');
+    await expect(part).toBeFocused();
+  }
+
+  // Enter on a focused nav link opens its destination.
+  for (const [i, { name, href }] of NAV_LINKS.entries()) {
+    await page.goto('/');
+    for (let tab = 0; tab <= i + 1; tab++) await page.keyboard.press('Tab');
+    const link = page.getByRole('link', { name, exact: true });
+    await expect(link).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new RegExp(`${href.replace(/\./g, '\\.')}$`));
+  }
+
+  // The theme toggle works with Enter and Space alike: each keypress cycles
+  // the mode, as the changing label shows.
+  await page.goto('/');
+  for (let tab = 0; tab <= NAV_LINKS.length + 1; tab++) await page.keyboard.press('Tab');
+  const toggle = page.getByRole('button', { name: 'Change theme (currently system)' });
+  await expect(toggle).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(
+    page.getByRole('button', { name: 'Change theme (currently dark)' })
+  ).toHaveText('dark');
+  await page.keyboard.press('Space');
+  await expect(
+    page.getByRole('button', { name: 'Change theme (currently light)' })
+  ).toHaveText('light');
 });

@@ -6,7 +6,8 @@
 // visible text, on-screen arrangement (bounding boxes), navigation
 // outcomes, and response status — never CSS property values, markup
 // minutiae, or script internals.
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { DESKTOP, postLinks } from './helpers';
 import {
   buildFixtureSite,
   fixtureTitle,
@@ -16,12 +17,14 @@ import {
   type FixtureSite,
 } from './fixture-site';
 
+// The homepage regression guards run at the spec-pinned desktop viewport
+// (1280×800 — Testing Decisions).
+test.use({ viewport: DESKTOP });
+
 // The 10 newest fixture posts, newest first: exactly what the homepage
 // snapshot must show. Fixture n is dated 2027-01-n, so the numeric order is
 // the newest-first order.
 const NEWEST_TEN = Array.from({ length: 10 }, (_, i) => fixtureTitle(FIXTURE_COUNT - i));
-
-const postLinks = (page: Page) => page.getByRole('heading', { level: 2 }).getByRole('link');
 
 let site: FixtureSite | undefined;
 

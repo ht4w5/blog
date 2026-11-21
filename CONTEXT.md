@@ -51,7 +51,7 @@ Your post content here...
 ### Drafts
 
 Posts with `draft: true` in frontmatter are excluded from:
-- The homepage and pagination
+- The homepage and the posts page
 - Tag pages
 - The search index
 - The RSS feed
@@ -92,9 +92,9 @@ Edit `src/data/about.md` to customize your about page content. It is rendered by
 - **Markdown posts** with frontmatter validation
 - **Syntax highlighting** for code blocks
 - **Tags** with filtered tag pages
-- **Inline search** powered by Fuse.js
+- **Posts page** with a fuzzy filter powered by the Fuse.js search index
 - **RSS feed** at `/feed.xml` with auto-discovery
-- **Pagination** at 20 posts per page
+- **Homepage** showing the 10 most recent posts, with the full list at `/posts`; tag pages keep numbered pagination at 20 posts per page
 - **Draft support** for work-in-progress posts
 - **Bilingual posts** (English and Simplified Chinese) via per-post `lang`
 - **Custom 404 page**

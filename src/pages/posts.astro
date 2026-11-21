@@ -31,7 +31,7 @@ const posts = (await getCollection('blog'))
     {posts.map((post) => {
       const excerpt = generateExcerpt(post.data.description, post.body);
       return (
-        <li class="post-item">
+        <li class="post-item" data-post-slug={post.id}>
           <h2><a href={`/blog/${post.id}`}>{post.data.title}</a></h2>
           <time class="post-date" datetime={post.data.date}>
             {post.data.date}
@@ -74,9 +74,11 @@ const posts = (await getCollection('blog'))
   const postList = document.querySelector<HTMLElement>('.post-list');
   const noMatch = document.querySelector<HTMLElement>('.no-posts-match');
 
+  // Post identity comes from the entry's data-post-slug attribute, not from
+  // the shape of its link.
   const items = [...document.querySelectorAll<HTMLLIElement>('.post-item')].map((el) => ({
     el,
-    slug: el.querySelector('h2 a')?.getAttribute('href')?.replace('/blog/', '') ?? '',
+    slug: el.dataset.postSlug ?? '',
   }));
 
   const fuseReady: Promise<Fuse<SearchItem>> = (async () => {
@@ -98,13 +100,21 @@ const posts = (await getCollection('blog'))
   }
 
   function applyFilter(matches: Set<string>): void {
-    if (matches.size === 0) {
+    // The empty-result line keys off the visible rendered entries, not the
+    // match set: an index-only match (an entry the index knows but this list
+    // never rendered) must not leave a blank list with no explanation.
+    let visibleCount = 0;
+    for (const { el, slug } of items) {
+      const show = matches.has(slug);
+      el.toggleAttribute('hidden', !show);
+      if (show) visibleCount++;
+    }
+    if (visibleCount === 0) {
       // The list is replaced by the muted empty-result line.
       postList?.setAttribute('hidden', '');
       noMatch?.removeAttribute('hidden');
       return;
     }
-    for (const { el, slug } of items) el.toggleAttribute('hidden', !matches.has(slug));
     postList?.removeAttribute('hidden');
     noMatch?.setAttribute('hidden', '');
   }
