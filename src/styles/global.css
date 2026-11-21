@@ -47,6 +47,10 @@
   color: var(--color-muted);
   padding: 0;
   line-height: 1;
+  /* Direct child of the nav container (the mobile grid places it on row one);
+     the negative margin keeps the 1rem gap to the search bracket that living
+     in .search-wrapper used to give it. */
+  margin-inline-start: -0.5rem;
 }
 
 .theme-toggle::before {
@@ -213,6 +217,8 @@ hr {
 
 .nav-links {
   display: flex;
+  /* Wrappable so the links never overflow on the narrowest phones. */
+  flex-wrap: wrap;
   gap: 1rem;
   list-style: none;
   margin: 0;
@@ -334,6 +340,61 @@ hr {
   padding: 0.5rem 0.6rem;
   color: var(--color-muted);
   font-style: italic;
+}
+
+/* Phone widths: the site nav reflows into deliberate rows — title + theme
+   toggle, nav links, full-width search. Distinct from the 900px post-layout
+   breakpoint on purpose: each layout follows its own failure point. */
+@media (max-width: 480px) {
+  .site-nav .container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "title toggle"
+      "links links"
+      "search search";
+  }
+
+  .site-title {
+    grid-area: title;
+  }
+
+  .theme-toggle {
+    grid-area: toggle;
+    margin-inline-start: 0;
+  }
+
+  .nav-links {
+    grid-area: links;
+  }
+
+  .search-wrapper {
+    grid-area: search;
+    margin-left: 0;
+  }
+
+  .search-bracket {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  /* The field fills the row at rest and on focus — the desktop expand-on-focus
+     width is moot here. */
+  .search-input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .search-input:focus {
+    width: 100%;
+  }
+
+  /* Match the full-width field above it. */
+  .search-results {
+    width: 100%;
+  }
 }
 
 /* Post list */
