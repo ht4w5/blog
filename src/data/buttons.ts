@@ -42,4 +42,10 @@ export const buttons: ButtonEntry[] = [
     imageSrc: '/buttons/github.png',
     href: 'https://github.com/ht4w5',
   },
+  {
+    id: 'rss',
+    alt: 'Rich Site Summary',
+    imageSrc: '/buttons/rss.png',
+    href: 'https://ht4w5.github.io/feed.xml'
+  }
 ];
