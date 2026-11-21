@@ -6,7 +6,7 @@ lang: "en"
 
 # About
 
-I'm a CS undergraduate at XJTU.
+CS undergraduate at XJTU.
 
 ### License
 
