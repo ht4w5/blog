@@ -471,7 +471,7 @@ hr {
 }
 
 /* The Backref (↩) is a control, not prose: keep it a clear clickable
-   affordance — link color plus underline, slightly apart from the text. */
+   affordance — accent color plus underline, slightly apart from the text. */
 .footnotes [data-footnote-backref] {
   margin-left: 0.2em;
   text-decoration: underline;
