@@ -91,3 +91,8 @@ traceable:
 | `search-click.spec.ts` — right-half press-and-release opens the post | ticket 02 checklist item 3 |
 | `search-click.spec.ts` — results open on focus and input, close on outside click, matching unchanged | ticket 02 checklist item 4; user story 31 |
 | `search-click.spec.ts` — tapping a row opens the post on a touch screen | user story 30 |
+| `site-nav.spec.ts` — mobile three-row site-nav arrangement (title + toggle, links, full-width search) | mobile-nav-toc ticket 01 checklist item 1 |
+| `site-nav.spec.ts` — nav links wrap instead of overflowing on very narrow phones | mobile-nav-toc ticket 01 checklist item 2 |
+| `site-nav.spec.ts` — theme toggle cycles themes from row one and the state persists | mobile-nav-toc ticket 01 checklist item 3 |
+| `site-nav.spec.ts` — search works from the full-width row; results sit directly under it | mobile-nav-toc ticket 01 checklist item 4 |
+| `site-nav.spec.ts` — desktop one-line guard | mobile-nav-toc ticket 01 checklist item 5 |
