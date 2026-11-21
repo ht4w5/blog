@@ -28,3 +28,7 @@ _Avoid_: static badge, non-link button
 **Backref**:
 The `↩` return link at a footnote definition pointing back to the reference that cited it.
 _Avoid_: back-link, return link, footnote anchor
+
+**Accent color**:
+The single brand color used for links and interactive affordances.
+_Avoid_: link color, brand color, theme color
