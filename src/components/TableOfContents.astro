@@ -19,29 +19,37 @@ const tocHeadings = headings
 
 {tocHeadings.length > 0 && (
   <nav class="toc" aria-label="Table of contents">
-    <span class="toc-title">Contents</span>
-    <ol class="toc-list">
-      {tocHeadings.map((heading) => (
-        <li class={`toc-item toc-depth-${heading.depth}`}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
-        </li>
-      ))}
-    </ol>
+    {/* Native disclosure: the Contents label collapses/expands the list with
+        click, tap, or keyboard, with or without script. Rendered open — the
+        outline shows by default. */}
+    <details open>
+      <summary class="toc-title">Contents</summary>
+      <ol class="toc-list">
+        {tocHeadings.map((heading) => (
+          <li class={`toc-item toc-depth-${heading.depth}`}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </details>
   </nav>
 )}
 
 <script>
-  // Scrollspy: highlight the TOC entry for the section currently in view,
-  // and keep that entry visible inside the scrollable TOC container.
+  // Scrollspy: for each table-of-contents instance on the page, highlight the
+  // entry for the section currently in view and keep that entry visible inside
+  // the instance's scrollable container. Driven per instance: the page may
+  // render the component more than once, and each copy tracks its own state.
   interface TocEntry {
     link: HTMLAnchorElement;
     item: HTMLElement;
     heading: HTMLElement;
   }
 
-  const toc = document.querySelector<HTMLElement>('.toc');
+  // A heading counts as "current" once it passes this line below the top.
+  const OFFSET = 120;
 
-  if (toc) {
+  function setupScrollspy(toc: HTMLElement): () => void {
     const entries: TocEntry[] = [];
     for (const link of toc.querySelectorAll<HTMLAnchorElement>('.toc a')) {
       const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
@@ -49,6 +57,7 @@ const tocHeadings = headings
       if (heading && item) entries.push({ link, item, heading });
     }
 
+    const disclosure = toc.querySelector('details');
     let active: TocEntry | null = null;
 
     function keepVisible(entry: TocEntry): void {
@@ -71,12 +80,11 @@ const tocHeadings = headings
       if (active) {
         active.item.classList.add('is-active');
         active.link.setAttribute('aria-current', 'true');
-        keepVisible(active);
+        // Scrolling the container only has an effect while the list is
+        // expanded; a collapsed instance has nothing to keep visible.
+        if (!disclosure || disclosure.open) keepVisible(active);
       }
     }
-
-    // A heading counts as "current" once it passes this line below the top.
-    const OFFSET = 120;
 
     function update(): void {
       const marker = window.scrollY + OFFSET;
@@ -95,8 +103,16 @@ const tocHeadings = headings
       setActive(current);
     }
 
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    update();
+    return update;
   }
+
+  const updates = Array.from(document.querySelectorAll<HTMLElement>('.toc'), setupScrollspy);
+
+  function updateAll(): void {
+    for (const update of updates) update();
+  }
+
+  window.addEventListener('scroll', updateAll, { passive: true });
+  window.addEventListener('resize', updateAll);
+  updateAll();
 </script>
