@@ -38,5 +38,5 @@ The persistent top bar of every page, containing the site title and the bracket 
 _Avoid_: header, navbar, menu
 
 **Table of contents**:
-The generated outline of a post's h2 and h3 headings, shown as a sticky sidebar on wide screens and above the post content on narrow screens, with its entries always expanded under a plain static Contents label.
+The generated list of a post's h2 and h3 headings, shown as a sticky right rail on wide screens and above the post content on narrow screens, with its entries always expanded under a plain static Contents label.
 _Avoid_: TOC widget, outline, sidebar

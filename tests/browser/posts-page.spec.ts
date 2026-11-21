@@ -9,17 +9,13 @@
 // accessibility state exposed to assistive tech — never CSS property values,
 // markup minutiae, or script internals.
 import { test, expect, type Page } from '@playwright/test';
-import { box, isBelow, LAYOUT_SLACK } from './helpers';
-
-const DESKTOP = { width: 1280, height: 800 };
-const PHONE = { width: 375, height: 812 };
+import { box, isBelow, LAYOUT_SLACK, DESKTOP, PHONE, postLinks } from './helpers';
 
 // The site's two posts, in the newest-first order the archive shows.
 const NEWEST_POST = 'Pooling slices in Go without extra allocations';
 const OLDEST_POST = 'Test';
 
 const heading = (page: Page) => page.getByRole('heading', { level: 1, name: 'Posts' });
-const postLinks = (page: Page) => page.getByRole('heading', { level: 2 }).getByRole('link');
 const filter = (page: Page) => page.getByRole('textbox', { name: 'Filter posts' });
 
 test('the posts page shows the Posts heading and the complete post list newest first', async ({
@@ -110,6 +106,28 @@ test('when nothing matches the list is replaced by a single muted no posts match
   await filter(page).fill('poolng');
   await expect(emptyLine).toBeHidden();
   await expect(page.getByRole('link', { name: NEWEST_POST, exact: true })).toBeVisible();
+});
+
+test('when the search index and the rendered list disagree, an empty list still shows the no posts match line', async ({
+  page,
+}) => {
+  // The empty line keys off the visible rendered entries, so an index-only
+  // match (an entry the index knows but the page never rendered) cannot
+  // leave a blank list with no explanation.
+  await page.route('**/search-index.json', (route) =>
+    route.fulfill({
+      json: [
+        { slug: 'phantom-post', title: 'Phantom post', tags: [], excerpt: '', date: '2027-01-01' },
+      ],
+    })
+  );
+  await page.goto('/posts');
+
+  // The query matches only the unrendered index entry: nothing is visible.
+  await filter(page).fill('phantom');
+  await expect(page.getByText('no posts match', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: NEWEST_POST, exact: true })).toBeHidden();
+  await expect(page.getByRole('link', { name: OLDEST_POST, exact: true })).toBeHidden();
 });
 
 test('the filter has no URL state: navigating away or reloading clears it', async ({ page }) => {

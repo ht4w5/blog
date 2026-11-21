@@ -1,5 +1,6 @@
 // Table-of-contents static structure (nav-posts-search ticket 02): what a
-// visitor receives in the built post page is an always-expanded outline — a
+// visitor receives in the built post page is an always-expanded table of
+// contents — a
 // plain static "Contents" heading followed by the entry links, with no
 // disclosure element left to fold it. Assert what a visitor receives in the
 // HTML — never CSS property values or script internals. Run via `pnpm test`,
@@ -22,13 +23,13 @@ test('the built post page carries an always-expanded table of contents', async (
   const html = await loadBuiltPage(POST);
   const toc = tocRegion(html);
 
-  // Nothing folds: the disclosure markup is gone from the outline, so it is
-  // expanded even before any script runs.
-  assert.ok(!toc.includes('<details'), 'the outline has no disclosure to open');
-  assert.ok(!toc.includes('<summary'), 'the outline has no disclosure label');
+  // Nothing folds: the disclosure markup is gone from the table of
+  // contents, so it is expanded even before any script runs.
+  assert.ok(!toc.includes('<details'), 'the table of contents has no disclosure to open');
+  assert.ok(!toc.includes('<summary'), 'the table of contents has no disclosure label');
 
   // The plain static label and every entry are in the HTML itself.
-  // Kept as literals so a regression cannot quietly drop the outline.
+  // Kept as literals so a regression cannot quietly drop the table of contents.
   const text = visibleText(toc);
   assert.ok(text.includes('Contents'), 'the static Contents label is rendered');
   for (const name of [

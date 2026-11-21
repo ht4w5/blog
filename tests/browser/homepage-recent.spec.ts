@@ -8,10 +8,12 @@
 // site. Assert only what a visitor observes — visible text, on-screen
 // arrangement (bounding boxes), and navigation outcomes — never CSS
 // property values, markup minutiae, or script internals.
-import { test, expect, type Page } from '@playwright/test';
-import { box, isBelow } from './helpers';
+import { test, expect } from '@playwright/test';
+import { box, isBelow, DESKTOP, postLinks } from './helpers';
 
-const postLinks = (page: Page) => page.getByRole('heading', { level: 2 }).getByRole('link');
+// The homepage regression guards run at the spec-pinned desktop viewport
+// (1280×800 — Testing Decisions).
+test.use({ viewport: DESKTOP });
 
 test('the homepage lists at most the 10 most recent posts, newest first', async ({ page }) => {
   // The complete list, newest first, is what the posts page shows; the

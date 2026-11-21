@@ -2,7 +2,16 @@
 // visitor observes — rendered geometry (bounding boxes), visibility, and
 // on-screen arrangement — never CSS property values, markup minutiae, or
 // script internals. Run via `pnpm test`.
-import type { Locator } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
+
+/** The spec-pinned desktop viewport. */
+export const DESKTOP = { width: 1280, height: 800 };
+
+/** The spec-pinned phone viewport. */
+export const PHONE = { width: 375, height: 812 };
+
+/** The post-entry links of a rendered post list, in list order. */
+export const postLinks = (page: Page) => page.getByRole('heading', { level: 2 }).getByRole('link');
 
 /** The on-screen rectangle a visitor sees for an element. */
 export type Box = { x: number; y: number; width: number; height: number };

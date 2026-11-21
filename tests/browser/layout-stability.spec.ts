@@ -6,6 +6,7 @@
 // a named bound. Assert what a visitor observes — never CSS property values,
 // markup minutiae, or script internals.
 import { test, expect, type Page } from '@playwright/test';
+import { PHONE, DESKTOP } from './helpers';
 
 // Cumulative layout shift a reader can absorb without taps landing wrong.
 // Observed load noise (font swaps) sits under 0.02; a content jump — the bug
@@ -15,10 +16,7 @@ const MAX_LAYOUT_SHIFT = 0.05;
 // Representative pages at the viewports this spec reworked: the post with the
 // table of contents and the homepage, on a phone and on a desktop window.
 const PAGES = ['/blog/pooling-slices-in-go-without-extra-allocations', '/'];
-const VIEWPORTS = [
-  { width: 375, height: 812 },
-  { width: 1280, height: 800 },
-];
+const VIEWPORTS = [PHONE, DESKTOP];
 
 // The cumulative layout-shift value since the page started loading: how much
 // visible content has moved under the reader.
