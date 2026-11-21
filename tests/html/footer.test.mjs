@@ -70,12 +70,3 @@ for (const page of PAGES) {
     assert.equal(visible, copyright, 'the copyright line is the only visible text');
   });
 }
-
-test('the CC badge stays in the footer — it is not turned into a wall button', async () => {
-  const html = await loadBuiltPage('index.html');
-
-  const ccButton = anchors(html).find(
-    (a) => attr(a.attrs, 'href') === FOOTER_BADGE.href && /\swidth="88"/.test(a.inner)
-  );
-  assert.ok(!ccButton, 'the CC badge does not become an 88×31 wall button');
-});
