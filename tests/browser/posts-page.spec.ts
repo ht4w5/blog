@@ -1,13 +1,14 @@
 // Posts page with fuzzy filter (nav-posts-search ticket 01): /posts is the
 // complete post archive — every post, newest first — beneath a full-content-
-// width filter input that fuzzy-filters the list instantly as the reader
-// types, over post titles, tags, and excerpt text (the old nav search's
-// matching, reused). When nothing matches, the list is replaced by a muted
-// `no posts match` line. Without JavaScript the page is the plain complete
-// list with no dead filter control. Assert only what a visitor observes:
-// visible text, on-screen arrangement (bounding boxes), typing outcomes, and
-// accessibility state exposed to assistive tech — never CSS property values,
-// markup minutiae, or script internals.
+// width filter bar (the nav links' plain text with brackets) that fuzzy-
+// filters the list instantly as the reader types, over post titles, tags,
+// and excerpt text (the old nav search's matching, reused). When nothing
+// matches, the list is replaced by a muted `no posts match` line. Without
+// JavaScript the page is the plain complete list with no dead filter control.
+// Assert only what a visitor observes: visible text, on-screen arrangement
+// (bounding boxes), typing outcomes, and accessibility state exposed to
+// assistive tech — never CSS property values, markup minutiae, or script
+// internals.
 import { test, expect, type Page } from '@playwright/test';
 import { box, isBelow, LAYOUT_SLACK, DESKTOP, PHONE, postLinks } from './helpers';
 
@@ -17,6 +18,8 @@ const OLDEST_POST = 'Test';
 
 const heading = (page: Page) => page.getByRole('heading', { level: 1, name: 'Posts' });
 const filter = (page: Page) => page.getByRole('textbox', { name: 'Filter posts' });
+// The bracketed bar around the input — the control as the reader sees it.
+const filterBar = (page: Page) => filter(page).locator('xpath=..');
 
 test('the posts page shows the Posts heading and the complete post list newest first', async ({
   page,
@@ -31,7 +34,7 @@ test('the posts page shows the Posts heading and the complete post list newest f
   await expect(links.nth(1)).toHaveText(OLDEST_POST);
 });
 
-test('the filter input spans the content width beneath the heading and carries the placeholder and an accessible label', async ({
+test('the filter bar spans the content width beneath the heading as bracketed plain text, and the input carries the placeholder and an accessible label', async ({
   page,
 }) => {
   for (const viewport of [PHONE, DESKTOP]) {
@@ -42,15 +45,23 @@ test('the filter input spans the content width beneath the heading and carries t
     await expect(input).toBeVisible();
     await expect(input).toHaveAttribute('placeholder', 'filter posts');
 
+    // The nav links' plain-text-with-brackets style: the reader sees
+    // rendered bracket glyphs around a text line, not a form-control box.
+    const bar = filterBar(page);
+    await expect(bar).toContainText('[');
+    await expect(bar).toContainText(']');
+    const inputBox = await box(input);
+    expect(inputBox.height).toBeLessThanOrEqual(1.6 * 14 + LAYOUT_SLACK);
+
     // Directly beneath the heading and above the list, spanning the full
     // content width the heading and list span.
     const headingBox = await box(heading(page));
-    const inputBox = await box(input);
+    const barBox = await box(bar);
     const listBox = await box(postLinks(page).first());
-    expect(isBelow(inputBox, headingBox)).toBe(true);
-    expect(isBelow(listBox, inputBox)).toBe(true);
-    expect(Math.abs(inputBox.x - headingBox.x)).toBeLessThanOrEqual(LAYOUT_SLACK);
-    expect(Math.abs(inputBox.width - headingBox.width)).toBeLessThanOrEqual(LAYOUT_SLACK);
+    expect(isBelow(barBox, headingBox)).toBe(true);
+    expect(isBelow(listBox, barBox)).toBe(true);
+    expect(Math.abs(barBox.x - headingBox.x)).toBeLessThanOrEqual(LAYOUT_SLACK);
+    expect(Math.abs(barBox.width - headingBox.width)).toBeLessThanOrEqual(LAYOUT_SLACK);
   }
 });
 

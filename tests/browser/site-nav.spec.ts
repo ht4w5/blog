@@ -172,6 +172,23 @@ test('the site nav stays on one line on desktop: site title left, bracket group 
   ).toBeLessThanOrEqual(LAYOUT_SLACK);
 });
 
+test('the theme toggle sits level with the bracket links', async ({ page }) => {
+  await page.setViewportSize(DESKTOP);
+  await page.goto('/');
+  const { links, toggle } = navParts(page);
+  const toggleBox = await box(toggle);
+
+  // Level means level: the toggle's rendered box shares the links' text line
+  // — same vertical centre to the pixel (same font, same line). A button
+  // riding its own box used to sit a couple of pixels low.
+  for (const link of links) {
+    const linkBox = await box(link);
+    expect(
+      Math.abs(toggleBox.y + toggleBox.height / 2 - (linkBox.y + linkBox.height / 2))
+    ).toBeLessThanOrEqual(1);
+  }
+});
+
 test('the nav links and theme toggle are reachable in reading order and operable with the keyboard', async ({
   page,
 }) => {

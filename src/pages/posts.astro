@@ -12,16 +12,16 @@ const posts = (await getCollection('blog'))
 <BaseLayout title="Posts" description="All posts">
   <h1>Posts</h1>
 
-  {/* Ships hidden: the filtering script below reveals it as its first act, so
-      a visitor without JavaScript gets the plain complete list and no dead
-      filter control. */}
-  <input
+  {/* Ships hidden: the filtering script below reveals it as its first act,
+      so a visitor without JavaScript gets the plain complete list and no dead
+      filter control. The bar is the nav links' plain-text-with-brackets
+      style: literal brackets around a plain input. */}
+  <span class="posts-filter-bar" hidden>[<input
     type="text"
     class="posts-filter"
     placeholder="filter posts"
     aria-label="Filter posts"
-    hidden
-  />
+  />]</span>
 
   {/* Pre-rendered empty-result line, hidden by default: the filtering script
       shows it in place of the list when nothing matches. */}
@@ -68,8 +68,10 @@ const posts = (await getCollection('blog'))
     date: string;
   }
 
+  const filterBar = document.querySelector<HTMLElement>('.posts-filter-bar');
+  filterBar?.removeAttribute('hidden');
+
   const filterInput = document.querySelector<HTMLInputElement>('.posts-filter');
-  filterInput?.removeAttribute('hidden');
 
   const postList = document.querySelector<HTMLElement>('.post-list');
   const noMatch = document.querySelector<HTMLElement>('.no-posts-match');

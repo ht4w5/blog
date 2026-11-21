@@ -130,7 +130,7 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | Test | Covers |
 | --- | --- |
 | `posts-page.spec.ts` — the posts page shows the Posts heading and the complete post list newest first | nav-posts-search ticket 01 checklist item 1 |
-| `posts-page.spec.ts` — the filter input spans the content width beneath the heading and carries the placeholder and an accessible label | nav-posts-search ticket 01 checklist items 1, 5 |
+| `posts-page.spec.ts` — the filter bar spans the content width beneath the heading as bracketed plain text, and the input carries the placeholder and an accessible label | nav-posts-search ticket 01 checklist items 1, 5 |
 | `posts-page.spec.ts` — typing filters the list instantly and fuzzily over titles, tags, and excerpts — a typo still finds its post | nav-posts-search ticket 01 checklist item 2 |
 | `posts-page.spec.ts` — every match stays visible — the filter has no result cap | nav-posts-search ticket 01 checklist item 3 |
 | `posts-page.spec.ts` — when nothing matches the list is replaced by a single muted no posts match line | nav-posts-search ticket 01 checklist item 4 |
@@ -158,6 +158,7 @@ mobile-nav-toc spec are listed again with their nav-posts-search coverage:
 | `homepage-fixtures.spec.ts` — tag pages still paginate: a tag with more than 20 posts keeps its page 2 | nav-posts-search ticket 03 checklist item 4 |
 | `site-nav.spec.ts` — the bracket links are home, posts, about, tags, dirs, feed, then the theme toggle | nav-posts-search ticket 04 checklist item 1 |
 | `site-nav.spec.ts` — the theme toggle label mirrors the mode through the cycle and the state persists | nav-posts-search ticket 04 checklist item 2 |
+| `site-nav.spec.ts` — the theme toggle sits level with the bracket links | post-review maintainer feedback (toggle alignment) |
 | `site-nav.spec.ts` — the site nav stays on one line on desktop: site title left, bracket group right | nav-posts-search ticket 04 checklist item 3 |
 | `site-nav.spec.ts` — the site nav stacks into two rows at every phone width: site title, then the bracket links | nav-posts-search ticket 04 checklist item 4 |
 | `site-nav.spec.ts` — the bracket nav links wrap rather than overflow on the narrowest phones | nav-posts-search ticket 04 checklist item 4 |

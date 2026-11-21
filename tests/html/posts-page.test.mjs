@@ -1,7 +1,7 @@
 // Built-HTML tests for the posts page (nav-posts-search ticket 01): the
 // archive content a visitor receives — every post, newest first — and the
-// filter's no-JS safety: the input and the empty-result line ship hidden and
-// are revealed only by the page's script. Assert what a visitor receives —
+// filter's no-JS safety: the filter bar and the empty-result line ship hidden
+// and are revealed only by the page's script. Assert what a visitor receives —
 // never CSS property values, markup minutiae, or script internals.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,18 +12,23 @@ import { attr, links, visibleText } from './helpers.mjs';
 const NEWEST_POST = '/blog/pooling-slices-in-go-without-extra-allocations';
 const OLDEST_POST = '/blog/hello-world';
 
-test('the built posts page ships the filter input hidden for its script to reveal', async () => {
+test('the built posts page ships the filter bar hidden for its script to reveal', async () => {
   const html = await loadBuiltPage('posts/index.html');
 
-  const inputTag = html.match(/<input[^>]*class="posts-filter"[^>]*>/)?.[0];
-  assert.ok(inputTag, 'the filter input is rendered on the posts page');
+  // The bar wraps the input and carries the brackets; hidden on the bar hides
+  // the whole control.
+  const barTag = html.match(/<span[^>]*class="posts-filter-bar"[^>]*>/)?.[0];
+  assert.ok(barTag, 'the filter bar is rendered on the posts page');
 
   // Without JavaScript nothing reveals it, so a visitor never sees a dead
   // filter control.
   assert.ok(
-    /(^|\s)hidden(\s|=|>|\/)/.test(inputTag),
-    `the filter input ships hidden: ${inputTag}`
+    /(^|\s)hidden(\s|=|>|\/)/.test(barTag),
+    `the filter bar ships hidden: ${barTag}`
   );
+
+  const inputTag = html.match(/<input[^>]*class="posts-filter"[^>]*>/)?.[0];
+  assert.ok(inputTag, 'the filter input is rendered inside the bar');
   assert.equal(attr(inputTag, 'placeholder'), 'filter posts');
   assert.equal(attr(inputTag, 'aria-label'), 'Filter posts');
 });
