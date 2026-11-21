@@ -91,3 +91,14 @@ traceable:
 | `search-click.spec.ts` — right-half press-and-release opens the post | ticket 02 checklist item 3 |
 | `search-click.spec.ts` — results open on focus and input, close on outside click, matching unchanged | ticket 02 checklist item 4; user story 31 |
 | `search-click.spec.ts` — tapping a row opens the post on a touch screen | user story 30 |
+
+Rows for the mobile-nav-toc spec (named with the spec slug to keep the
+ticket numbers unambiguous):
+
+| Test | Covers |
+| --- | --- |
+| `table-of-contents.spec.ts` — the Contents label collapses and re-expands the outline (click at desktop, tap on a phone) | mobile-nav-toc ticket 02 checklist item 1; user stories 12, 14 |
+| `table-of-contents.spec.ts` — the disclosure loads expanded and is operable with Enter/Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
+| `table-of-contents.spec.ts` — the entry for the section being read carries `aria-current`, updating on scroll and after jumps | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
+| `table-of-contents.spec.ts` — with the component used twice on a page, each instance toggles and tracks independently | mobile-nav-toc ticket 02 checklist item 4 |
+| `table-of-contents.spec.ts` — the desktop table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
