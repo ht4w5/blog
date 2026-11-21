@@ -187,3 +187,9 @@
 - The glossary gained **Site nav** and **Table of contents** during the design
   session; future tickets in this area should use those names and avoid "header",
   "navbar", "outline", "sidebar".
+
+## Comments
+
+- Implementation complete on `integration/mobile-nav-toc` (tickets 01–03 resolved; code-review fix pass `acce2c4`). `pnpm test` is green except the pre-existing accepted red in `tests/html/footer.test.mjs` (CC badge — maintainer decision in `.scratch/teal-accent/spec.md`).
+- One flagged deviation, ticket 01 comments: in the ≈528–615px band the wrap grouping of search/theme-toggle differs slightly from today (measurement showed the one-line nav fits down to ≈616px, not ≈470px). Awaiting maintainer direction: accept, extend the ≤480px grid breakpoint, or `nowrap` container.
+- One-time manual check worth doing in Safari: the `<summary>` marker hiding is CSS-only (`::marker` / `::-webkit-details-marker`), unverifiable by the Chromium test suite.
