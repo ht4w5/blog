@@ -76,40 +76,48 @@ Two expectation styles are in use, deliberately:
 
 ## Browser-seam scope
 
-The spec's Testing Decisions describe the browser seam as covering "exactly
-one thing" (the search-result click fix). The ticket checklists and user
-stories require more observable browser coverage: ticket 02's right-half
-clicks and unchanged open/close behaviour, and user story 30's tap. Those
-browser tests stay; the table records which ticket checklist item or user
-story each browser test covers, so the extension is deliberate and
-traceable:
+The site-directory-button-wall spec's Testing Decisions describe the browser
+seam as covering "exactly one thing" (the search-result click fix). The ticket
+checklists and user stories require more observable browser coverage: ticket
+02's right-half clicks and unchanged open/close behaviour, and user story 30's
+tap; later specs extend it further. Those browser tests stay; the tables below
+record which ticket checklist item or user story each browser test covers, so
+the extension is deliberate and traceable. One row per test, with the test's
+literal name as it appears in its spec file.
+
+Rows for the site-directory-button-wall spec:
 
 | Test | Covers |
 | --- | --- |
-| `homepage.spec.ts` — site title; opening the first post | ticket 01 (the browser seam itself) |
-| `search-click.spec.ts` — left-half press-and-release opens the post; results collapse only via outside click or after navigation | ticket 02 checklist items 1–2; user stories 28–29 |
-| `search-click.spec.ts` — right-half press-and-release opens the post | ticket 02 checklist item 3 |
-| `search-click.spec.ts` — results open on focus and input, close on outside click, matching unchanged | ticket 02 checklist item 4; user story 31 |
-| `search-click.spec.ts` — tapping a row opens the post on a touch screen | user story 30 |
-| `site-nav.spec.ts` — mobile three-row site-nav arrangement (title + toggle, links, full-width search) | mobile-nav-toc ticket 01 checklist item 1 |
-| `site-nav.spec.ts` — nav links wrap instead of overflowing on very narrow phones | mobile-nav-toc ticket 01 checklist item 2 |
-| `site-nav.spec.ts` — theme toggle cycles themes from row one and the state persists | mobile-nav-toc ticket 01 checklist item 3 |
-| `site-nav.spec.ts` — search works from the full-width row; results sit directly under it | mobile-nav-toc ticket 01 checklist item 4 |
-| `site-nav.spec.ts` — desktop one-line guard | mobile-nav-toc ticket 01 checklist item 5 |
+| `homepage.spec.ts` — homepage shows the site title and its first post can be opened | ticket 01 (the browser seam itself) |
+| `search-click.spec.ts` — a press-and-release on the left half of a result row opens the post | ticket 02 checklist items 1–2; user stories 28–29 |
+| `search-click.spec.ts` — a press-and-release on the right half of a result row opens the post | ticket 02 checklist item 3 |
+| `search-click.spec.ts` — results open on focus and input, close on outside click, and match as before | ticket 02 checklist item 4; user story 31 |
+| `search-click.spec.ts` — tapping a result row opens the post | user story 30 |
 
-Rows for the mobile-nav-toc spec (named with the spec slug to keep the
-ticket numbers unambiguous):
+Rows for the mobile-nav-toc spec (the Covers column names the spec slug to
+keep the ticket numbers unambiguous):
 
 | Test | Covers |
 | --- | --- |
-| `table-of-contents.spec.ts` — the Contents label collapses and re-expands the outline (click at desktop; tapping is covered by the phone test below) | mobile-nav-toc ticket 02 checklist item 1; user stories 12, 14 |
-| `table-of-contents.spec.ts` — the disclosure loads expanded and is operable with Enter/Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
-| `table-of-contents.spec.ts` — the entry for the section being read carries `aria-current`, updating on scroll and after jumps | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
-| `table-of-contents.spec.ts` — with the component rendered twice on a page, each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
-| `table-of-contents.spec.ts` — the desktop table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
-| `table-of-contents.spec.ts` — at phone width the table of contents sits directly under the post title/date/tags and above the article body | mobile-nav-toc ticket 03 checklist item 1; user story 10 |
-| `table-of-contents.spec.ts` — the table of contents loads collapsed at phone width; one tap expands it and a second tap collapses it | mobile-nav-toc ticket 03 checklist item 2; user stories 11, 12, 14 |
+| `site-nav.spec.ts` — the site nav stacks into three rows at every phone width: title + toggle, links, full-width search | mobile-nav-toc ticket 01 checklist item 1 |
+| `site-nav.spec.ts` — every nav link stays fully visible at narrow widths | mobile-nav-toc ticket 01 checklist item 2 |
+| `site-nav.spec.ts` — the nav links wrap onto multiple rows when one line cannot fit | mobile-nav-toc ticket 01 checklist item 2 |
+| `site-nav.spec.ts` — the theme toggle cycles themes from its first-row spot and the state persists | mobile-nav-toc ticket 01 checklist item 3 |
+| `site-nav.spec.ts` — search works from the full-width row and results sit directly under it | mobile-nav-toc ticket 01 checklist item 4 |
+| `site-nav.spec.ts` — the site nav stays on one line, arranged title → links → search → toggle | mobile-nav-toc ticket 01 checklist item 5 |
+| `table-of-contents.spec.ts` — the table of contents loads expanded and the Contents label collapses and re-expands the list | mobile-nav-toc ticket 02 checklist items 1–2; user stories 12, 14, 17 |
+| `table-of-contents.spec.ts` — the disclosure is operable with Enter and Space | mobile-nav-toc ticket 02 checklist item 2; user stories 17, 18 |
+| `table-of-contents.spec.ts` — the table of contents is the right-side rail, expanded by default | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
+| `table-of-contents.spec.ts` — the table of contents stays the sticky right rail beside the article | mobile-nav-toc ticket 02 checklist item 5; user story 16 |
+| `table-of-contents.spec.ts` — the active entry is scrolled into view in the rail while reading on | mobile-nav-toc ticket 02 checklist item 5; user story 15 |
+| `table-of-contents.spec.ts` — opening a collapsed rail brings the current entry into view | mobile-nav-toc ticket 02 checklist items 1, 5 |
+| `table-of-contents.spec.ts` — the table of contents sits directly under the post title/date/tags and above the article body | mobile-nav-toc ticket 03 checklist item 1; user story 10 |
+| `table-of-contents.spec.ts` — the table of contents loads collapsed; one tap expands it and a second tap collapses it | mobile-nav-toc ticket 03 checklist item 2; user stories 11, 12, 14 |
 | `table-of-contents.spec.ts` — tapping an entry jumps to its section and marks it as current in the visible copy | mobile-nav-toc ticket 03 checklist item 3; user stories 13, 20 |
-| `table-of-contents.spec.ts` — with JavaScript disabled, the disclosure and its entries are present and usable | mobile-nav-toc ticket 03 checklist item 4; user story 21 |
+| `table-of-contents.spec.ts` — the disclosure and its entries are present and usable | mobile-nav-toc ticket 03 checklist item 4; user story 21 |
 | `table-of-contents.spec.ts` — exactly one table of contents is exposed to assistive tech at a time | mobile-nav-toc ticket 03 checklist item 5; user story 19 |
-| `table-of-contents.spec.ts` — the table of contents is the right-side rail, expanded by default (desktop guard) | mobile-nav-toc ticket 03 checklist item 6; user stories 16, 17 |
+| `table-of-contents.spec.ts` — jumping to a section marks that entry as the current one | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
+| `table-of-contents.spec.ts` — the marked entry updates as the reader scrolls | mobile-nav-toc ticket 02 checklist item 3; user stories 15, 20 |
+| `table-of-contents.spec.ts` — each copy keeps its own disclosure state and tracks the current section | mobile-nav-toc ticket 02 checklist item 4; user story 25 |
+| `layout-stability.spec.ts` — the page loads without content shifting under the reader | mobile-nav-toc user story 23 |

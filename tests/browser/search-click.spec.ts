@@ -4,6 +4,7 @@
 // press. Assert only what a visitor observes: visible results, link
 // destinations, navigation — never CSS values or script internals.
 import { test, expect, type Page } from '@playwright/test';
+import { box } from './helpers';
 
 const POST_URL = /\/blog\/hello-world\/?$/;
 
@@ -26,9 +27,9 @@ async function searchAndGetRow(page: Page) {
 
 test('a press-and-release on the left half of a result row opens the post', async ({ page }) => {
   const { input, row } = await searchAndGetRow(page);
-  const box = (await row.boundingBox())!;
+  const rowBox = await box(row);
 
-  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2);
+  await page.mouse.move(rowBox.x + rowBox.width * 0.2, rowBox.y + rowBox.height / 2);
   await page.mouse.down();
   // Hold past the input's width transition — the bug slides the row out from
   // under a held cursor before the release.
@@ -55,9 +56,9 @@ test('a press-and-release on the left half of a result row opens the post', asyn
 
 test('a press-and-release on the right half of a result row opens the post', async ({ page }) => {
   const { row } = await searchAndGetRow(page);
-  const box = (await row.boundingBox())!;
+  const rowBox = await box(row);
 
-  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+  await page.mouse.move(rowBox.x + rowBox.width * 0.8, rowBox.y + rowBox.height / 2);
   await page.mouse.down();
   await page.waitForTimeout(400);
   await page.mouse.up();
@@ -99,9 +100,9 @@ test.describe('on a touch screen', () => {
 
   test('tapping a result row opens the post', async ({ page }) => {
     const { row } = await searchAndGetRow(page);
-    const box = (await row.boundingBox())!;
+    const rowBox = await box(row);
 
-    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    await page.touchscreen.tap(rowBox.x + rowBox.width / 2, rowBox.y + rowBox.height / 2);
 
     await expect(page).toHaveURL(POST_URL);
   });

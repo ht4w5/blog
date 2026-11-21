@@ -736,8 +736,18 @@ hr {
   cursor: pointer;
   user-select: none;
   /* The label is the disclosure toggle; hide the default marker so it keeps
-     its plain-text look. */
+     its plain-text look. Chromium honours `list-style: none` here; Safari
+     still draws a triangle unless `::marker` and `::-webkit-details-marker`
+     are silenced too. */
   list-style: none;
+}
+
+.toc-title::marker {
+  content: '';
+}
+
+.toc-title::-webkit-details-marker {
+  display: none;
 }
 
 .toc-list {

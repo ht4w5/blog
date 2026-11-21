@@ -5,9 +5,17 @@
 // elements, on-screen arrangement (bounding boxes), tap outcomes, and
 // accessibility state — never CSS values, markup minutiae, or script
 // internals.
-import { test, expect, type Locator, type Page } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { box, boxes, isBelow, overlapsVertically } from './helpers';
 
 const NAV_LINK_NAMES = ['[posts]', '[about]', '[tags]', '[dirs]', '[feed]'];
+
+// The bracket glyphs the search field's container adds cost a few pixels of
+// edge alignment.
+const BRACKET_GLYPH_SLACK = 12;
+
+// Pixel band for grouping link boxes into rows despite sub-pixel offsets.
+const ROW_BAND = 4;
 
 const navParts = (page: Page) => ({
   title: page.getByRole('link', { name: 'ht4w5', exact: true }),
@@ -16,21 +24,14 @@ const navParts = (page: Page) => ({
   toggle: page.getByRole('button', { name: /^Theme:/ }),
 });
 
-type Box = { x: number; y: number; width: number; height: number };
-
-const box = (locator: Locator): Promise<Box> => locator.boundingBox() as Promise<Box>;
-const boxes = (locators: Locator[]): Promise<Box[]> => Promise.all(locators.map(box));
-
-const overlapsVertically = (a: Box, b: Box): boolean =>
-  a.y < b.y + b.height && b.y < a.y + a.height;
-const isBelow = (a: Box, b: Box): boolean => a.y >= b.y + b.height - 2;
-
-test.describe('on a phone viewport (375×812)', () => {
-  test.use({ viewport: { width: 375, height: 812 } });
-
-  test('the site nav stacks into three rows: title + toggle, links, full-width search', async ({
-    page,
-  }) => {
+test('the site nav stacks into three rows at every phone width: title + toggle, links, full-width search', async ({
+  page,
+}) => {
+  // Ticket 01: "at 375×812 and any width ≤480px" — the arrangement must hold
+  // at the narrowest phones and at the breakpoint's upper edge, not just at
+  // the one reported width.
+  for (const width of [320, 375, 460]) {
+    await page.setViewportSize({ width, height: 812 });
     await page.goto('/');
     const { title, links, search, toggle } = navParts(page);
     const titleBox = await box(title);
@@ -46,12 +47,13 @@ test.describe('on a phone viewport (375×812)', () => {
       expect(toggleBox.x + toggleBox.width).toBeGreaterThan(part.x + part.width);
     }
 
-    // Row 2: all bracket nav links, below row 1 and above the search row.
+    // Row 2: all bracket nav links, below row 1 and above the search row
+    // (onto more than one line if they must wrap).
     for (const linkBox of linkBoxes) {
       expect(isBelow(linkBox, titleBox)).toBe(true);
       expect(isBelow(linkBox, toggleBox)).toBe(true);
       expect(isBelow(searchBox, linkBox)).toBe(true);
-      expect(linkBox.x + linkBox.width).toBeLessThanOrEqual(375);
+      expect(linkBox.x + linkBox.width).toBeLessThanOrEqual(width);
     }
 
     // Row 3: the search field spans the full content width (a bracket
@@ -59,10 +61,17 @@ test.describe('on a phone viewport (375×812)', () => {
     expect(isBelow(searchBox, titleBox)).toBe(true);
     expect(isBelow(searchBox, toggleBox)).toBe(true);
     const contentLeft = titleBox.x;
-    const contentRight = 375 - titleBox.x;
-    expect(Math.abs(searchBox.x - contentLeft)).toBeLessThanOrEqual(12);
-    expect(Math.abs(searchBox.x + searchBox.width - contentRight)).toBeLessThanOrEqual(12);
-  });
+    const contentRight = width - titleBox.x;
+    expect(Math.abs(searchBox.x - contentLeft)).toBeLessThanOrEqual(BRACKET_GLYPH_SLACK);
+    expect(Math.abs(searchBox.x + searchBox.width - contentRight)).toBeLessThanOrEqual(
+      BRACKET_GLYPH_SLACK
+    );
+  }
+});
+
+test.describe('on a phone viewport (375×812)', () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
   test('the theme toggle cycles themes from its first-row spot and the state persists', async ({
     page,
   }) => {
@@ -94,8 +103,10 @@ test.describe('on a phone viewport (375×812)', () => {
     const inBox = await box(input);
     const rowBox = await box(row);
     expect(isBelow(rowBox, inBox)).toBe(true);
-    expect(Math.abs(rowBox.x - inBox.x)).toBeLessThanOrEqual(12);
-    expect(Math.abs(rowBox.x + rowBox.width - (inBox.x + inBox.width))).toBeLessThanOrEqual(12);
+    expect(Math.abs(rowBox.x - inBox.x)).toBeLessThanOrEqual(BRACKET_GLYPH_SLACK);
+    expect(Math.abs(rowBox.x + rowBox.width - (inBox.x + inBox.width))).toBeLessThanOrEqual(
+      BRACKET_GLYPH_SLACK
+    );
   });
 });
 
@@ -116,7 +127,7 @@ test('the nav links wrap onto multiple rows when one line cannot fit', async ({ 
   for (const width of [300, 320]) {
     await page.setViewportSize({ width, height: 812 });
     await page.goto('/');
-    const rows = new Set((await boxes(links)).map((b) => Math.round(b.y / 4)));
+    const rows = new Set((await boxes(links)).map((b) => Math.round(b.y / ROW_BAND)));
     expect(rows.size).toBeGreaterThan(1);
   }
 });
