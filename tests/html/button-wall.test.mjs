@@ -53,20 +53,14 @@ test('the button wall follows the posts, separated from them', async () => {
     'the separator comes before the buttons'
   );
 
-  // Document order of visible content: every post title link (and any
-  // pagination link) comes before the separator, so the wall follows the
-  // posts; the wall comes before the footer's copyright line.
+  // Document order of visible content: every post title link comes before
+  // the separator, so the wall follows the posts; the wall comes before the
+  // footer's copyright line.
   const destinations = links(html);
   for (const link of destinations.filter((l) => l.href.startsWith('/blog/'))) {
     assert.ok(
       link.index < separator,
       `the post link ${link.href} comes before the separator`
-    );
-  }
-  for (const link of destinations.filter((l) => l.href.startsWith('/page/'))) {
-    assert.ok(
-      link.index < separator,
-      `the pagination link ${link.href} comes before the separator`
     );
   }
   const copyright = html.search(/© \d{4} ht4w5/);
@@ -119,9 +113,9 @@ test('linked buttons carry their destination; flair badges render without a link
 });
 
 test('the button wall renders on the homepage and on no other page', async () => {
-  // A whole-dist sweep: every emitted HTML page — pagination pages included
-  // whenever the build emits any — is checked, so absence can never silently
-  // go unverified.
+  // A whole-dist sweep: every emitted HTML page is checked — tag pagination
+  // pages included whenever the build emits any — so absence can never
+  // silently go unverified.
   const pages = await listBuiltPages();
   assert.ok(pages.includes('index.html'), 'the build emits the homepage');
 

@@ -442,6 +442,22 @@ hr {
   font-size: 0.95rem;
 }
 
+/* The homepage's single exit to the complete list: bracket-style matching
+   the nav links (literal brackets, mono, muted). */
+.all-posts-link {
+  margin: 0 0 2rem;
+}
+
+.all-posts-link a {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.all-posts-link a:hover {
+  color: var(--color-accent);
+}
+
 /* Posts page filter — a fixed page control: mono like the nav search it
    replaces, but no expand-on-focus (it already spans the content width).
    Rendered hidden and revealed by its script so the no-JS page is a plain
