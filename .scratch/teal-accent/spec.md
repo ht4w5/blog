@@ -1,6 +1,6 @@
 # Spec: Accent color switch to teal (#2aa198)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 ## Problem Statement
 
@@ -68,3 +68,9 @@ Switch the site's **accent color** to the teal hue of `#2aa198`, with theme-awar
 - Contrast figures above were computed for each value against its own theme background; all four exceed 4.5:1 except the intentionally-not-used light-mode rendering of `#2aa198` itself (3.03:1), which is why light mode gets the darkened sibling.
 - A sweep confirmed the superseded blue (`#3366aa` / `#224488`) appears only at the token definitions in the global stylesheet — no stray copies elsewhere in source, components, or tests.
 - The rename keeps this change honest for future theming work: "accent" now names the concept in code, in the glossary, and in review discussion alike.
+
+## Comments
+
+- Implemented on `integration/teal-accent`; tickets 01–03 all resolved. Two-axis code review (Standards + Spec) run against `main`; the one actionable finding (stale "link color" comment phrase) fixed in `1c6a81a` (merged `d5bc01f`).
+- Documented suppressions: glossary definitional use of an avoided synonym kept (spec-mandated wording; **Backref** entry precedent); dark token-block duplication kept (this spec mandates both dark mechanisms define identical values; merging the blocks is out of scope); button-wall hover outline follows the accent (it consumed the old token, so the mechanical rename covers it); the `tests/html/footer.test.mjs` "CC badge" failure is pre-existing (from maintainer commit `4958778 data: add buttons`, fails identically on `main`) and left to the maintainer — it needs a policy decision: keep the CC wall button and re-scope the guarded test, or drop the button from the wall data.
+- Both themes verified in the real rendered site (browser seam) before shipping, per Testing Decisions.
